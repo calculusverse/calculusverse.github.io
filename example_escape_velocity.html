@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape Velocity & Related Rates | CalculusVerse</title>
+    <meta name="description" content="Differential Calculus Related Rates: Finding instantaneous acceleration of a falling tool in planetary gravity using the Chain Rule." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation Lab</a>
+        <a href="/integration.html" class="nav-link">Integration Lab</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <!-- Breadcrumb -->
+      <div class="clean-meta" style="margin-bottom: 0.75rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">Home</a>
+        <span class="meta-dot">·</span>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+        <span class="meta-dot">·</span>
+        <span>Differential Calculus Application 05</span>
+      </div>
+
+      <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.75rem); margin-bottom: 0.5rem;">
+        Escape Velocity & Related Rates: Freefall in Space
+      </h1>
+      <p class="section-lead" style="max-width: 840px; margin-bottom: 2rem;">
+        How the Chain Rule connects velocity dependent on position with acceleration dependent on time: $\frac{dv}{dt} = \frac{dv}{dr} \cdot \frac{dr}{dt}$.
+      </p>
+
+      <!-- Problem Statement Card -->
+      <section class="glass-panel" style="margin-bottom: 2rem; border-left: 3px solid var(--vibrant-purple);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--vibrant-purple); margin-bottom: 0.5rem;">
+          The Real-Life Problem
+        </h2>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          An astronaut drops a heavy tool out of a space capsule hovering $2,000\text{ km}$ ($2 \times 10^6\text{ meters}$) above a small celestial planetoid. As it falls straight down, the object accelerates under planetary gravity. Newton’s Law of Gravitation dictates that its downward velocity $v$ at a radial distance $r$ from the planet's center is:
+        </p>
+        <div class="math-display-card" style="margin-bottom: 1rem; text-align: center;">
+          <div style="font-size: 1.3rem; font-weight: bold; color: var(--neon-cyan);">
+            $$v = \sqrt{\frac{2GM}{r}}$$
+          </div>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6;">
+          If the gravitational constant product $2GM \approx 8 \times 10^{12}\text{ m}^3\text{/s}^2$, <strong>how fast is the tool accelerating at the exact moment it passes a point $1,500\text{ km}$ ($1.5 \times 10^6\text{ meters}$) from the center?</strong>
+        </p>
+      </section>
+
+      <!-- Interactive Simulation Stage -->
+      <div class="workbench-layout" style="margin-bottom: 2.5rem;">
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div class="canvas-card" style="height: 440px; position: relative;">
+            <canvas id="gravityCanvas"></canvas>
+            
+            <div style="position: absolute; top: 12px; left: 14px; background: rgba(11, 15, 25, 0.85); padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.8rem;">
+              <span>🪐 Lunar Outpost & Velocity/Acceleration Curves</span>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Bar -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Radial Distance ($r$)</div>
+              <div id="statRadius" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: bold;">1,500 km</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Downward Speed ($v$)</div>
+              <div id="statVelocity" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: bold;">2,309 m/s</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">dv/dr Gradient</div>
+              <div id="statDvDr" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--warm-gold); font-weight: bold;">-0.00077 s⁻¹</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Acceleration ($a = \frac{dv}{dt}$)</div>
+              <div id="statAccel" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: bold;">1.78 m/s²</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Deck -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Radial Probe & Orbit Controls
+          </h3>
+
+          <!-- Radial Distance Slider -->
+          <div class="control-row" style="margin-bottom: 1.25rem;">
+            <div class="control-label">
+              <span>Probe Radius $r$:</span>
+              <span id="radiusSliderVal" style="color: var(--neon-cyan); font-family: var(--font-mono); font-weight: 600;">1,500 km</span>
+            </div>
+            <input type="range" id="radiusSlider" min="900" max="2000" step="10" value="1500" style="width: 100%;" />
+            <div class="slider-ticks" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+              <span>900 km (Surface)</span>
+              <span>1,500 km (Target)</span>
+              <span>2,000 km (Capsule)</span>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+              Key Orbital Waypoints:
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <button class="preset-btn active" id="btnWaypointTarget" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🎯 Target Question: $r = 1,500\text{ km} \implies a \approx 1.78\text{ m/s}^2$
+              </button>
+              <button class="preset-btn" id="btnWaypointDrop" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🛸 Capsule Release: $r = 2,000\text{ km} \implies a = 1.00\text{ m/s}^2$
+              </button>
+              <button class="preset-btn" id="btnWaypointImpact" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🌑 Low Altitude: $r = 1,000\text{ km} \implies a = 4.00\text{ m/s}^2$
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <button class="btn-primary" id="btnDropTool" style="flex: 1; padding: 0.65rem 1rem;">
+              <span id="dropIcon">🔧</span>
+              <span id="dropText">Drop Tool (Freefall)</span>
+              <span class="kbd-hint">Space</span>
+            </button>
+            <button class="btn-secondary" id="btnResetGravity" style="padding: 0.65rem 1rem;">
+              <span>Reset</span>
+              <span class="kbd-hint">R</span>
+            </button>
+          </div>
+
+          <!-- Conceptual Insight -->
+          <div class="math-display-card" style="border-left: 2px solid var(--vibrant-purple); background: rgba(157, 78, 221, 0.05); padding: 0.85rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--vibrant-purple); margin-bottom: 0.25rem;">
+              💡 Why Related Rates are So Magical
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              $v$ is given as a formula of distance $r$, not time $t$! We don't need a stopwatch to find acceleration: the Chain Rule connects how fast speed changes across space with how fast space changes across time:
+              $$\frac{dv}{dt} = \frac{dv}{dr} \times \frac{dr}{dt}$$
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Derivation & Calculus Proof -->
+      <section class="glass-panel" style="margin-bottom: 2rem;">
+        <h2 class="section-title" style="font-size: 1.45rem; margin-bottom: 0.75rem;">
+          Step-by-Step Mathematical Derivation
+        </h2>
+        <p class="section-lead" style="margin-bottom: 1.5rem;">
+          Two independent ways to find the acceleration—both arriving at Newton's universal inverse-square law:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Method 1: Chain Rule -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.5rem;">
+              Method 1: The Chain Rule (Related Rates)
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Acceleration is defined as the time rate of change of velocity: $a = \frac{dv}{dt}$. By the Chain Rule:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$a = \frac{dv}{dt} = \frac{dv}{dr} \cdot \frac{dr}{dt}$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.75rem; margin-bottom: 0.5rem;">
+              Now we calculate each piece individually:
+            </p>
+            <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
+              <strong>Piece A: Find $\frac{dv}{dr}$</strong><br />
+              Rewrite the velocity function in exponential form: $v = (2GM)^{1/2} \cdot r^{-1/2}$. Differentiating with respect to $r$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$\frac{dv}{dr} = (2GM)^{1/2} \left( -\frac{1}{2} r^{-3/2} \right) = -\frac{\sqrt{2GM}}{2 r^{3/2}}$$
+            </div>
+            <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6; margin-top: 0.75rem;">
+              <strong>Piece B: Find $\frac{dr}{dt}$</strong><br />
+              Since the object is falling inward toward the center, its radial distance $r$ is decreasing at exactly the speed $v$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$\frac{dr}{dt} = -v = -\sqrt{\frac{2GM}{r}}$$
+            </div>
+            <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6; margin-top: 0.75rem;">
+              <strong>Piece C: Multiply the two rates</strong>
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--neon-cyan); font-size: 1.15rem; font-weight: bold;">
+              $$a = \frac{dv}{dt} = \left( -\frac{\sqrt{2GM}}{2 r^{3/2}} \right) \cdot \left( -\sqrt{\frac{2GM}{r}} \right) = \frac{2GM}{2 r^2} = \frac{GM}{r^2}$$
+            </div>
+          </div>
+
+          <!-- Method 2: Implicit Differentiation -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--vibrant-purple); margin-bottom: 0.5rem;">
+              Method 2: Implicit Differentiation (Faster Alternative)
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Square both sides of $v = \sqrt{\frac{2GM}{r}}$ to eliminate the square root:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$v^2 = \frac{2GM}{r}$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+              Differentiate both sides with respect to time $t$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$\frac{d}{dt}[v^2] = \frac{d}{dt}\left[ 2GM \cdot r^{-1} \right]$$
+              $$2v \frac{dv}{dt} = -\frac{2GM}{r^2} \cdot \frac{dr}{dt}$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.5rem;">
+              Since the downward velocity is $v$, $\frac{dr}{dt} = -v$. Substituting:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$2v \frac{dv}{dt} = -\frac{2GM}{r^2}(-v) = \frac{2GM}{r^2} v$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.5rem;">
+              Divide both sides by $2v$:
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--vibrant-purple); font-size: 1.15rem; font-weight: bold;">
+              $$\frac{dv}{dt} = a = \frac{2GM}{2r^2} = \frac{GM}{r^2}$$
+            </div>
+          </div>
+
+          <!-- Step 3: Plugging in Numbers -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+              Step 3: Calculating Numerical Acceleration at $r = 1,500\text{ km}$
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Given $2GM = 8 \times 10^{12}\text{ m}^3\text{/s}^2$ and $r = 1,500\text{ km} = 1.5 \times 10^6\text{ m}$:
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--emerald-green); font-size: 1.2rem; font-weight: bold;">
+              $$a = \frac{8 \times 10^{12}}{2 \times (1.5 \times 10^6)^2} = \frac{8 \times 10^{12}}{2 \times (2.25 \times 10^{12})} = \frac{8}{4.5} = \frac{16}{9} \approx 1.78\text{ m/s}^2$$
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.75rem;">
+              <strong>Answer:</strong> At the exact moment the tool passes $1,500\text{ km}$ from the center, it is accelerating downward at precisely $\frac{16}{9} \approx 1.78\text{ m/s}^2$. Notice that the negative signs cancel out, confirming that downward acceleration is pulling the tool faster toward the planet!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation to other examples -->
+      <section style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+        <a href="/example_rocket_work.html" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Previous: Work Done by Variable Force</span>
+        </a>
+        <a href="/example_profit_optimization.html" class="btn-primary">
+          <span>Next: Marginal Cost & Revenue (Profit)</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="https://IkramulHoque-Arik.github.io" target="_blank" style="color: var(--text-muted); text-decoration: none;">Portfolio</a>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+      </div>
+    </footer>
+
+    <!-- Interactive Simulation Script -->
+    <script type="module">
+      import { sound, setupSimulationShortcuts, createSimulationHUD } from '/main.js';
+
+      const canvas = document.getElementById('gravityCanvas');
+      const ctx = canvas.getContext('2d');
+      const radiusSlider = document.getElementById('radiusSlider');
+      const radiusSliderVal = document.getElementById('radiusSliderVal');
+      const btnDropTool = document.getElementById('btnDropTool');
+      const btnReset = document.getElementById('btnResetGravity');
+      const dropText = document.getElementById('dropText');
+      const dropIcon = document.getElementById('dropIcon');
+
+      // Metric elements
+      const statRadius = document.getElementById('statRadius');
+      const statVelocity = document.getElementById('statVelocity');
+      const statDvDr = document.getElementById('statDvDr');
+      const statAccel = document.getElementById('statAccel');
+
+      const TWO_GM = 8e12; // m^3/s^2
+      let currentR_km = 1500; // in km
+      let isFalling = false;
+      let animFrameId = null;
+
+      // Initialize Simulation HUD
+      const hud = createSimulationHUD({
+        container: canvas.parentElement,
+        status: 'Paused',
+        moduleTitle: 'Freefall Rates',
+        shortcuts: [
+          { key: 'Space', label: 'Toggle Freefall' },
+          { key: 'R', label: 'Reset Capsule' }
+        ],
+        position: 'top-right',
+        onToggle: toggleDrop,
+        onReset: resetDrop
+      });
+
+      function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        draw();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      // Physics computations
+      function getVelocity(r_m) {
+        return Math.sqrt(TWO_GM / r_m); // m/s
+      }
+
+      function getAccel(r_m) {
+        return (TWO_GM / 2) / (r_m * r_m); // m/s^2
+      }
+
+      function getDvDr(r_m) {
+        return -Math.sqrt(TWO_GM) / (2 * Math.pow(r_m, 1.5));
+      }
+
+      function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const dividerX = Math.max(240, w * 0.40);
+
+        // ----------------------------------------------------
+        // LEFT STAGE: CELESTIAL FREEFALL VIEW
+        // ----------------------------------------------------
+        ctx.fillStyle = '#060913';
+        ctx.fillRect(0, 0, dividerX, h);
+
+        // Stars
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        const stars = [
+          {x: 30, y: 40}, {x: 80, y: 90}, {x: 180, y: 60}, {x: 130, y: 150},
+          {x: 50, y: 220}, {x: 190, y: 260}, {x: 210, y: 120}
+        ];
+        stars.forEach(s => {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 1, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Planetoid body at the bottom
+        const planetCenterX = dividerX / 2;
+        const planetCenterY = h + 220; // sphere center below canvas
+        const planetRadius = 300;
+
+        const planetGrad = ctx.createRadialGradient(planetCenterX - 50, planetCenterY - 100, 40, planetCenterX, planetCenterY, planetRadius);
+        planetGrad.addColorStop(0, '#475569');
+        planetGrad.addColorStop(0.6, '#1e293b');
+        planetGrad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = planetGrad;
+        ctx.beginPath();
+        ctx.arc(planetCenterX, planetCenterY, planetRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Planet surface crust stroke
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(planetCenterX, planetCenterY, planetRadius, Math.PI, 0, false);
+        ctx.stroke();
+
+        // Craters on surface
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
+        const craters = [{x: planetCenterX - 60, y: h - 35, r: 14}, {x: planetCenterX + 50, y: h - 25, r: 18}, {x: planetCenterX - 10, y: h - 45, r: 8}];
+        craters.forEach(c => {
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Capsule at hovering position (top: 2,000 km = y ~ 50)
+        const capsuleY = 55;
+        const surfaceY = h - 60;
+        // Current tool Y based on r (2000 km -> capsuleY, 900 km -> surfaceY)
+        const normR = (currentR_km - 900) / (2000 - 900); // 1 = capsule, 0 = surface
+        const toolY = surfaceY - normR * (surfaceY - capsuleY);
+
+        // Hovering Capsule
+        ctx.save();
+        ctx.translate(planetCenterX, capsuleY);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(-22, -8, 44, 16);
+        // Solar panels
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-45, -5, 20, 10);
+        ctx.fillRect(25, -5, 20, 10);
+        ctx.restore();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('🛸 Capsule (2,000 km)', planetCenterX, capsuleY - 14);
+
+        // Falling Tool (wrench icon & motion speed streaks)
+        if (normR < 0.98) {
+          ctx.strokeStyle = 'rgba(157, 78, 221, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([3, 5]);
+          ctx.beginPath();
+          ctx.moveTo(planetCenterX, capsuleY + 12);
+          ctx.lineTo(planetCenterX, toolY - 10);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Draw tool sprite with glowing halo
+        ctx.save();
+        ctx.translate(planetCenterX, toolY);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🔧', 0, 0);
+
+        // Velocity vector arrow pointing down
+        const cur_r_m = currentR_km * 1000;
+        const curV = getVelocity(cur_r_m);
+        const curA = getAccel(cur_r_m);
+        const vVectorLen = Math.min(50, curV * 0.015);
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 14);
+        ctx.lineTo(0, 14 + vVectorLen);
+        ctx.stroke();
+        // Arrowhead
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(-4, 14 + vVectorLen);
+        ctx.lineTo(4, 14 + vVectorLen);
+        ctx.lineTo(0, 20 + vVectorLen);
+        ctx.fill();
+
+        ctx.restore();
+
+        // Marker label next to tool
+        ctx.fillStyle = '#00f2fe';
+        ctx.font = '600 11px Outfit, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`r = ${Math.round(currentR_km)} km`, planetCenterX + 24, toolY - 5);
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.fillText(`v = ${Math.round(curV)} m/s`, planetCenterX + 24, toolY + 10);
+
+        // Lunar surface label
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌕 Lunar Surface (r ≈ 900 km)', planetCenterX, h - 15);
+
+        // Divider
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(dividerX, 0);
+        ctx.lineTo(dividerX, h);
+        ctx.stroke();
+
+        // ----------------------------------------------------
+        // RIGHT STAGE: VELOCITY & ACCELERATION FUNCTION CURVES
+        // ----------------------------------------------------
+        const graphMargin = { top: 40, right: 35, bottom: 45, left: dividerX + 65 };
+        const gw = w - graphMargin.left - graphMargin.right;
+        const gh = h - graphMargin.top - graphMargin.bottom;
+
+        if (gw <= 50 || gh <= 50) return;
+
+        // X scale: 900 to 2000 km
+        const toScreenX = (r_km) => graphMargin.left + ((r_km - 900) / (2000 - 900)) * gw;
+        // Y scale for v: 1500 to 3200 m/s
+        const toScreenY_v = (v) => graphMargin.top + gh - ((v - 1500) / (3200 - 1500)) * gh;
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        for (let r = 1000; r <= 2000; r += 250) {
+          const sx = toScreenX(r);
+          ctx.beginPath();
+          ctx.moveTo(sx, graphMargin.top);
+          ctx.lineTo(sx, graphMargin.top + gh);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${r}k`, sx, graphMargin.top + gh + 16);
+        }
+
+        for (let v = 1500; v <= 3000; v += 500) {
+          const sy = toScreenY_v(v);
+          ctx.beginPath();
+          ctx.moveTo(graphMargin.left, sy);
+          ctx.lineTo(graphMargin.left + gw, sy);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${v} m/s`, graphMargin.left - 8, sy + 3);
+        }
+
+        // Axes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(graphMargin.left, graphMargin.top);
+        ctx.lineTo(graphMargin.left, graphMargin.top + gh);
+        ctx.lineTo(graphMargin.left + gw, graphMargin.top + gh);
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Radial Distance r (km from planet center)', graphMargin.left + gw / 2, h - 10);
+        ctx.save();
+        ctx.translate(graphMargin.left - 45, graphMargin.top + gh / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Downward Velocity v (m/s)', 0, 0);
+        ctx.restore();
+
+        // 1. Draw Curve v(r) = sqrt(2GM / r)
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let r_km = 900; r_km <= 2000; r_km += 10) {
+          const v = getVelocity(r_km * 1000);
+          const sx = toScreenX(r_km);
+          const sy = toScreenY_v(v);
+          if (r_km === 900) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        ctx.stroke();
+
+        // 2. Tangent Line at currentR representing dv/dr
+        const curSx = toScreenX(currentR_km);
+        const curSy = toScreenY_v(curV);
+        const curDvDr = getDvDr(cur_r_m); // in 1/s
+
+        // Tangent slope in screen coords: dy/dx = (dv_screen / dr_screen)
+        // Draw tangent segment
+        const deltaR_km = 220;
+        const x1_km = Math.max(900, currentR_km - deltaR_km);
+        const x2_km = Math.min(2000, currentR_km + deltaR_km);
+        const v1 = curV + curDvDr * ((x1_km - currentR_km) * 1000);
+        const v2 = curV + curDvDr * ((x2_km - currentR_km) * 1000);
+
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(x1_km), toScreenY_v(v1));
+        ctx.lineTo(toScreenX(x2_km), toScreenY_v(v2));
+        ctx.stroke();
+
+        // 3. Current Point Dot
+        ctx.fillStyle = '#00f2fe';
+        ctx.beginPath();
+        ctx.arc(curSx, curSy, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Dropline to X axis
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(curSx, curSy);
+        ctx.lineTo(curSx, graphMargin.top + gh);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Interactive Callout Box
+        ctx.fillStyle = 'rgba(11, 15, 25, 0.9)';
+        const calloutW = 160;
+        const calloutH = 38;
+        const calloutX = Math.min(curSx - calloutW / 2, w - calloutW - 10);
+        const calloutY = curSy - calloutH - 12;
+        ctx.fillRect(calloutX, calloutY, calloutW, calloutH);
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(calloutX, calloutY, calloutW, calloutH);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '600 11px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`v = ${Math.round(curV)} m/s`, calloutX + calloutW / 2, calloutY + 15);
+        ctx.fillStyle = '#34d399';
+        ctx.fillText(`a = dv/dt = ${curA.toFixed(2)} m/s²`, calloutX + calloutW / 2, calloutY + 30);
+
+        // Update DOM Stats
+        statRadius.textContent = `${Math.round(currentR_km).toLocaleString()} km`;
+        statVelocity.textContent = `${Math.round(curV).toLocaleString()} m/s`;
+        statDvDr.textContent = `${curDvDr.toFixed(5)} s⁻¹`;
+        statAccel.textContent = `${curA.toFixed(2)} m/s²`;
+      }
+
+      function stepDrop() {
+        if (!isFalling) return;
+
+        if (currentR_km > 920) {
+          currentR_km -= 5;
+          draw();
+          animFrameId = requestAnimationFrame(stepDrop);
+        } else {
+          isFalling = false;
+          dropText.textContent = 'Drop Tool';
+          dropIcon.textContent = '🔧';
+          sound.playChime();
+          if (hud) hud.setStatus('Finished');
+        }
+      }
+
+      function toggleDrop() {
+        if (isFalling) {
+          isFalling = false;
+          dropText.textContent = 'Resume Drop';
+          dropIcon.textContent = '▶';
+          if (animFrameId) cancelAnimationFrame(animFrameId);
+          if (hud) hud.setStatus('Paused');
+        } else {
+          if (currentR_km <= 930) {
+            currentR_km = 2000;
+          }
+          isFalling = true;
+          dropText.textContent = 'Pause Drop';
+          dropIcon.textContent = '⏸';
+          sound.playDrawSweep(2.5);
+          if (hud) hud.setStatus('Running');
+          animFrameId = requestAnimationFrame(stepDrop);
+        }
+      }
+
+      function resetDrop() {
+        isFalling = false;
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        currentR_km = 2000;
+        dropText.textContent = 'Drop Tool (Freefall)';
+        dropIcon.textContent = '🔧';
+        if (hud) hud.setStatus('Resetting');
+        setTimeout(() => { if (hud) hud.setStatus('Paused'); }, 400);
+        draw();
+      }
+
+      // Handlers
+      btnDropTool.addEventListener('click', toggleDrop);
+      btnReset.addEventListener('click', resetDrop);
+
+      radiusSlider.addEventListener('input', (e) => {
+        currentR_km = parseFloat(e.target.value);
+        radiusSliderVal.textContent = `${Math.round(currentR_km).toLocaleString()} km`;
+        if (isFalling) {
+          isFalling = false;
+          dropText.textContent = 'Drop Tool';
+          dropIcon.textContent = '🔧';
+        }
+        draw();
+      });
+
+      // Waypoints
+      document.getElementById('btnWaypointTarget').addEventListener('click', () => {
+        currentR_km = 1500;
+        radiusSlider.value = 1500;
+        radiusSliderVal.textContent = '1,500 km';
+        draw();
+      });
+
+      document.getElementById('btnWaypointDrop').addEventListener('click', () => {
+        currentR_km = 2000;
+        radiusSlider.value = 2000;
+        radiusSliderVal.textContent = '2,000 km';
+        draw();
+      });
+
+      document.getElementById('btnWaypointImpact').addEventListener('click', () => {
+        currentR_km = 1000;
+        radiusSlider.value = 1000;
+        radiusSliderVal.textContent = '1,000 km';
+        draw();
+      });
+
+      // Global keyboard shortcuts
+      setupSimulationShortcuts({
+        onToggleAnimation: toggleDrop,
+        onReset: resetDrop
+      });
+
+      // Initial run
+      resizeCanvas();
+      currentR_km = 1500;
+      draw();
+    </script>
+  </body>
+</html>

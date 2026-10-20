@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Total Distance from Speed | CalculusVerse</title>
+    <meta name="description" content="Integral Calculus Real-Life Example: Calculating total distance by accumulating the area under a velocity-time curve." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation Lab</a>
+        <a href="/integration.html" class="nav-link">Integration Lab</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <div class="clean-meta" style="margin-bottom: 0.75rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">Home</a>
+        <span class="meta-dot">·</span>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+        <span class="meta-dot">·</span>
+        <span>Integral Calculus Application 03</span>
+      </div>
+
+      <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.75rem); margin-bottom: 0.5rem;">
+        Total Distance from Speed: Area Accumulation
+      </h1>
+      <p class="section-lead" style="max-width: 820px; margin-bottom: 2rem;">
+        If your speedometer is constantly changing, simple multiplication $(d = v \times t)$ fails. Here is how definite integration calculates the exact distance traveled.
+      </p>
+
+      <!-- Problem Statement Card -->
+      <section class="glass-panel" style="margin-bottom: 2rem; border-left: 3px solid var(--emerald-green);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+          The Real-Life Problem
+        </h2>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          A high-speed express train travels between two metropolitan hubs over a $4\text{-hour}$ journey. Due to terrain and scheduled throttle adjustments, its velocity $v(t)$ (in $\text{km/h}$) varies over time $t$ (in hours) according to:
+        </p>
+        <div class="math-display-card" style="margin-bottom: 1rem; text-align: center;">
+          <div style="font-size: 1.2rem; font-weight: bold; color: var(--emerald-green);">
+            $$v(t) = -15t^2 + 60t + 80 \quad (0 \le t \le 4\text{ hours})$$
+          </div>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6;">
+          <strong>Target Question:</strong><br />
+          How many total kilometers does the train travel over the entire $4\text{-hour}$ trip?
+        </p>
+      </section>
+
+      <!-- Interactive Canvas & Train Stage -->
+      <div class="workbench-layout" style="margin-bottom: 2.5rem;">
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div class="canvas-card" style="height: 420px; position: relative;">
+            <canvas id="trainCanvas"></canvas>
+            
+            <div style="position: absolute; top: 12px; left: 14px; background: rgba(11, 15, 25, 0.85); padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.8rem;">
+              <span>🚅 Speed $v(t)$ & Shaded Area = Distance</span>
+            </div>
+          </div>
+
+          <!-- Train Rail Track -->
+          <div class="road-track-container" style="margin-top: 1rem;">
+            <div class="road-track" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-top-color: #0ea5e9; border-bottom-color: #0ea5e9;">
+              <div style="position: absolute; width: 100%; height: 2px; top: 50%; border-top: 2px dashed rgba(255,255,255,0.25);"></div>
+              <div id="trainSprite" style="position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 1.85rem; line-height: 1; z-index: 5; left: 10%;">
+                🚅
+              </div>
+            </div>
+            <div class="car-stats-bar">
+              <div>Time Elapsed: <span class="metric" id="liveTrainTime">t = 4.0 hr</span></div>
+              <div>Current Speed: <span class="metric" id="liveTrainSpeed" style="color: var(--neon-cyan);">80 km/h</span></div>
+              <div>Total Distance: <span class="metric" id="liveOdometer" style="color: var(--emerald-green); font-size: 1rem;">480.0 km</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Deck -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="glass-panel">
+            <h3 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.85rem;">
+              Trip Timeline
+            </h3>
+
+            <div class="slider-group" style="margin-bottom: 1rem;">
+              <div class="slider-label-row">
+                <span class="slider-name">Travel Time ($T$)</span>
+                <span class="slider-val" id="timeSliderVal">4.0 hr</span>
+              </div>
+              <input type="range" id="timeSlider" min="0.2" max="4.0" step="0.1" value="4.0" />
+            </div>
+
+            <div class="math-display-card" style="margin-bottom: 0.75rem;">
+              <div class="math-title">Definite Integral Area $\int_0^T v(t)\,dt$</div>
+              <div id="dispIntegral" style="font-size: 1.15rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: bold;">
+                $$\int_0^{4.0} v(t)\,dt = 480.0\text{ km}$$
+              </div>
+            </div>
+
+            <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;">
+              Notice how every single vertical slice has units of $\text{km/h} \times \text{hours} = \text{kilometers}$! Adding them together produces total accumulated distance.
+            </div>
+          </div>
+
+          <div class="glass-panel">
+            <button id="togglePlayBtn" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.6rem;">
+              <span>▶ Run Live Journey</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Mathematical Solution -->
+      <section class="glass-panel" style="padding: 2rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; margin-bottom: 1.25rem;">
+          Step-by-Step Calculus Solution
+        </h2>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; line-height: 1.7;">
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--emerald-green); margin-bottom: 0.4rem;">
+              Step 1: Set Up the Distance Integral
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              Since distance is the accumulation of velocity over time:
+            </p>
+            <div class="math-display-card">
+              $$D = \int_0^4 v(t)\,dt = \int_0^4 \left(-15t^2 + 60t + 80\right)\,dt$$
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--neon-cyan); margin-bottom: 0.4rem;">
+              Step 2: Find the Antiderivative
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              Integrate each term using the reverse power rule $\int t^n\,dt = \frac{t^{n+1}}{n+1}$:
+            </p>
+            <div class="math-display-card">
+              $$\int (-15t^2 + 60t + 80)\,dt = -15\left(\frac{t^3}{3}\right) + 60\left(\frac{t^2}{2}\right) + 80t = -5t^3 + 30t^2 + 80t$$
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--vibrant-purple); margin-bottom: 0.4rem;">
+              Step 3: Evaluate at the Boundaries $[0, 4]$
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              By the Fundamental Theorem of Calculus:
+            </p>
+            <div class="math-display-card" style="margin-bottom: 0.5rem;">
+              $$D = \left[-5(4)^3 + 30(4)^2 + 80(4)\right] - \left[0\right]$$
+            </div>
+            <p style="color: var(--text-muted);">
+              Computing the arithmetic:
+            </p>
+            <div class="math-display-card">
+              $$D = -5(64) + 30(16) + 320 = -320 + 480 + 320 = \mathbf{480\text{ km}}$$
+            </div>
+            <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 0.5rem;">
+              The train traveled an exact distance of <strong>480 kilometers</strong> over the 4 hours!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation to other examples -->
+      <section style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+        <a href="/example_box_optimization.html" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Previous: Box Optimization</span>
+        </a>
+        <a href="/example_rocket_work.html" class="btn-primary">
+          <span>Next: Work Done by Variable Force (Rocket)</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div><strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)</div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">← Home</a>
+        <a href="/example_rocket_work.html" style="color: var(--text-muted); text-decoration: none;">Next Example: Rocket Variable Force →</a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { sound, setupSimulationShortcuts } from '/main.js';
+
+      const canvas = document.getElementById('trainCanvas');
+      const ctx = canvas.getContext('2d');
+      const timeSlider = document.getElementById('timeSlider');
+      const timeSliderVal = document.getElementById('timeSliderVal');
+      const togglePlayBtn = document.getElementById('togglePlayBtn');
+
+      let maxT = 4.0;
+      let isPlaying = false;
+      let animId = null;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        draw();
+      }
+      window.addEventListener('resize', resize);
+
+      function v(t) {
+        return -15 * t * t + 60 * t + 80;
+      }
+      function antiD(t) {
+        return -5 * t * t * t + 30 * t * t + 80 * t;
+      }
+
+      function draw() {
+        const width = canvas.width / window.devicePixelRatio;
+        const height = canvas.height / window.devicePixelRatio;
+
+        ctx.clearRect(0, 0, width, height);
+
+        const margin = { left: 55, right: 30, top: 25, bottom: 40 };
+        const graphW = width - margin.left - margin.right;
+        const graphH = height - margin.top - margin.bottom;
+
+        const totalT = 4.0;
+        const maxV = 160;
+
+        function toX(tVal) { return margin.left + (tVal / totalT) * graphW; }
+        function toY(vVal) { return margin.top + graphH - (vVal / maxV) * graphH; }
+
+        // Grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        for (let t = 1; t <= 4; t++) {
+          const gx = toX(t);
+          ctx.beginPath();
+          ctx.moveTo(gx, margin.top);
+          ctx.lineTo(gx, margin.top + graphH);
+          ctx.stroke();
+        }
+        for (let vel = 40; vel <= maxV; vel += 40) {
+          const gy = toY(vel);
+          ctx.beginPath();
+          ctx.moveTo(margin.left, gy);
+          ctx.lineTo(margin.left + graphW, gy);
+          ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(margin.left, margin.top + graphH);
+        ctx.lineTo(margin.left + graphW, margin.top + graphH);
+        ctx.moveTo(margin.left, margin.top);
+        ctx.lineTo(margin.left, margin.top + graphH);
+        ctx.stroke();
+
+        // Numerals
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px JetBrains Mono';
+        for (let t = 0; t <= 4; t += 1) {
+          ctx.fillText(t + ' hr', toX(t) - 8, margin.top + graphH + 18);
+        }
+        for (let vel = 0; vel <= maxV; vel += 40) {
+          ctx.fillText(vel + ' km/h', margin.left - 48, toY(vel) + 4);
+        }
+
+        // Shaded integral area up to maxT
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(0));
+        for (let i = 0; i <= 60; i++) {
+          const curT = (i / 60) * maxT;
+          ctx.lineTo(toX(curT), toY(v(curT)));
+        }
+        ctx.lineTo(toX(maxT), toY(0));
+        ctx.closePath();
+        ctx.fill();
+
+        // Boundary vertical line at maxT
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(toX(maxT), margin.top);
+        ctx.lineTo(toX(maxT), margin.top + graphH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Speed Curve v(t)
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(16, 185, 129, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+          const curT = (i / 100) * totalT;
+          const px = toX(curT);
+          const py = toY(v(curT));
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Current speed point marker
+        ctx.fillStyle = '#00f2fe';
+        ctx.beginPath();
+        ctx.arc(toX(maxT), toY(v(maxT)), 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        updateHUD();
+      }
+
+      function updateHUD() {
+        const dist = antiD(maxT);
+        const curSpd = v(maxT);
+
+        timeSliderVal.textContent = maxT.toFixed(1) + ' hr';
+        document.getElementById('liveTrainTime').textContent = `t = ${maxT.toFixed(1)} hr`;
+        document.getElementById('liveTrainSpeed').textContent = `${curSpd.toFixed(1)} km/h`;
+        document.getElementById('liveOdometer').textContent = `${dist.toFixed(1)} km`;
+
+        // Update train on track
+        const train = document.getElementById('trainSprite');
+        const pct = Math.max(5, Math.min(92, (dist / 480) * 92));
+        train.style.left = pct + '%';
+
+        if (window.katex) {
+          window.katex.render(`\\int_0^{${maxT.toFixed(1)}} v(t)\\,dt = \\mathbf{${dist.toFixed(1)}\\text{ km}}`, document.getElementById('dispIntegral'), { throwOnError: false });
+        }
+      }
+
+      timeSlider.addEventListener('input', (e) => {
+        maxT = parseFloat(e.target.value);
+        draw();
+      });
+
+      function togglePlay() {
+        isPlaying = !isPlaying;
+        togglePlayBtn.innerHTML = isPlaying ? '<span>⏸ Pause</span>' : '<span>▶ Run Live Journey</span>';
+        if (isPlaying) loop();
+      }
+
+      function loop() {
+        if (!isPlaying) return;
+        maxT += 0.015;
+        if (maxT > 4.0) maxT = 0.2;
+        timeSlider.value = maxT.toFixed(2);
+        draw();
+        animId = requestAnimationFrame(loop);
+      }
+
+      togglePlayBtn.addEventListener('click', togglePlay);
+
+      setupSimulationShortcuts({
+        onToggleAnimation: togglePlay,
+        onReset: () => {
+          if (isPlaying) togglePlay();
+          maxT = 4.0;
+          timeSlider.value = 4.0;
+          draw();
+          sound.playChime();
+        }
+      });
+
+      setTimeout(resize, 100);
+    </script>
+  </body>
+</html>

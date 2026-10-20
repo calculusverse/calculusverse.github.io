@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consumer Surplus (Rideshare Economics) | CalculusVerse</title>
+    <meta name="description" content="Integral Calculus Real-Life Example: Calculating Consumer Surplus in rideshare pricing using definite integrals." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation Lab</a>
+        <a href="/integration.html" class="nav-link">Integration Lab</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <!-- Breadcrumb -->
+      <div class="clean-meta" style="margin-bottom: 0.75rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">Home</a>
+        <span class="meta-dot">·</span>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+        <span class="meta-dot">·</span>
+        <span>Integral Calculus Application 07</span>
+      </div>
+
+      <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.75rem); margin-bottom: 0.5rem;">
+        Consumer Surplus: The Rideshare Pricing Secret
+      </h1>
+      <p class="section-lead" style="max-width: 840px; margin-bottom: 2rem;">
+        How definite integrals measure the collective happiness and financial value saved by millions of everyday app users who were willing to pay higher fares.
+      </p>
+
+      <!-- Problem Statement Card -->
+      <section class="glass-panel" style="margin-bottom: 2rem; border-left: 3px solid var(--emerald-green);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+          The Real-Life Problem
+        </h2>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          A ride-sharing app analyzes local market data and models its weekly ride demand price by the linear function:
+        </p>
+        <div class="math-display-card" style="margin-bottom: 1rem; text-align: center;">
+          <div style="font-size: 1.25rem; font-weight: bold; color: var(--neon-cyan);">
+            $$p(x) = 40 - 0.05x$$
+          </div>
+        </div>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          where $p$ is the price per ride (in dollars), and $x$ is the quantity of rides requested (in thousands). Market equilibrium stabilizes at a flat rate of <strong>$15 per ride</strong> ($p^* = 15$).
+        </p>
+        <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6;">
+          <strong>Target Question:</strong><br />
+          What is the total <strong>Consumer Surplus</strong>? (The total dollar savings gained by customers who would have gladly paid more than $15 for urgent rides).
+        </p>
+      </section>
+
+      <!-- Interactive Stage -->
+      <div class="workbench-layout" style="margin-bottom: 2.5rem;">
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div class="canvas-card" style="height: 440px; position: relative;">
+            <canvas id="surplusCanvas"></canvas>
+            
+            <div style="position: absolute; top: 12px; left: 14px; background: rgba(11, 15, 25, 0.85); padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.8rem;">
+              <span>🚕 Demand Curve & Shaded Consumer Surplus Area</span>
+            </div>
+
+            <div style="position: absolute; top: 12px; right: 14px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--emerald-green); padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.8rem; color: var(--emerald-green); font-weight: 600;">
+              <span>Equilibrium: $15 @ 500k rides</span>
+            </div>
+          </div>
+
+          <!-- Market Metrics Ribbon -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Market Price ($p^*$)</div>
+              <div id="statPrice" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: bold;">$15.00 / ride</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Ride Volume ($x^*$)</div>
+              <div id="statQuantity" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: bold;">500,000 rides</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Total Spending</div>
+              <div id="statSpending" style="font-size: 1.05rem; font-family: var(--font-mono); color: #94a3b8; font-weight: bold;">$7,500,000</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Consumer Surplus (CS)</div>
+              <div id="statSurplus" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: bold;">+$6,250,000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Deck -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Market Equilibrium Controls
+          </h3>
+
+          <!-- Price Slider -->
+          <div class="control-row" style="margin-bottom: 1.25rem;">
+            <div class="control-label">
+              <span>Equilibrium Fare ($p^*$):</span>
+              <span id="priceSliderVal" style="color: var(--neon-cyan); font-family: var(--font-mono); font-weight: 600;">$15 per ride</span>
+            </div>
+            <input type="range" id="priceSlider" min="5" max="35" step="1" value="15" style="width: 100%;" />
+            <div class="slider-ticks" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+              <span>$5 (Super cheap)</span>
+              <span>$15 (Standard)</span>
+              <span>$35 (Surge pricing)</span>
+            </div>
+          </div>
+
+          <!-- Presets -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+              Pricing Scenarios:
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <button class="preset-btn active" id="btnStandard" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                ⭐ Baseline Problem: $p^* = \$15 \implies CS = \$6.25\text{ Million}$
+              </button>
+              <button class="preset-btn" id="btnSurge" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🌧️ Heavy Rain Surge: $p^* = \$25 \implies CS = \$2.25\text{ Million}$
+              </button>
+              <button class="preset-btn" id="btnPromo" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🎉 Holiday Promo: $p^* = \$10 \implies CS = \$9.00\text{ Million}$
+              </button>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <button class="btn-primary" id="btnAnimateSurplus" style="flex: 1; padding: 0.65rem 1rem;">
+              <span id="surplusIcon">✨</span>
+              <span id="surplusText">Animate Riemann Slices</span>
+              <span class="kbd-hint">Space</span>
+            </button>
+            <button class="btn-secondary" id="btnResetPrice" style="padding: 0.65rem 1rem;">
+              <span>Reset</span>
+              <span class="kbd-hint">R</span>
+            </button>
+          </div>
+
+          <!-- High School Intuition Card -->
+          <div class="math-display-card" style="border-left: 2px solid var(--emerald-green); background: rgba(16, 185, 129, 0.05); padding: 0.85rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--emerald-green); margin-bottom: 0.25rem;">
+              💡 Real-World Story: What is Consumer Surplus?
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              Suppose you are rushing to the airport and willing to pay $35 for an urgent ride. When you open the app and see the ride only costs $15, you just saved $20! If you add up the savings of all 500,000 riders, that shaded green area is the total $6,250,000 kept in consumers' pockets!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete Mathematical Derivation & Proof -->
+      <section class="glass-panel" style="margin-bottom: 2rem;">
+        <h2 class="section-title" style="font-size: 1.45rem; margin-bottom: 0.75rem;">
+          Step-by-Step Mathematical Solution
+        </h2>
+        <p class="section-lead" style="margin-bottom: 1.5rem;">
+          Here is how economists and mathematicians calculate Consumer Surplus using integral calculus:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Step 1 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.5rem;">
+              Step 1: Determine Equilibrium Quantity $x^*$
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Set the demand price equation equal to the equilibrium market price $p^* = 15$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$p(x) = p^*$$
+              $$40 - 0.05x = 15$$
+              $$0.05x = 40 - 15 = 25$$
+              $$x^* = \frac{25}{0.05} = 500\text{ thousand rides (500,000 total rides)}$$
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-dim); margin-top: 0.5rem;">
+              This means when price stabilizes at $15, exactly 500,000 passengers choose to book rides that week.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--vibrant-purple); margin-bottom: 0.5rem;">
+              Step 2: Set Up the Consumer Surplus Integral
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Consumer Surplus represents the area beneath the demand curve $p(x)$ and above the equilibrium horizontal price line $p^*$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$CS = \int_{0}^{x^*} [p(x) - p^*]\,dx$$
+              $$CS = \int_{0}^{500} [(40 - 0.05x) - 15]\,dx = \int_{0}^{500} (25 - 0.05x)\,dx$$
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+              Step 3: Evaluate Using the Fundamental Theorem of Calculus
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Integrate with respect to $x$:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$CS = \left[ 25x - 0.05 \cdot \frac{x^2}{2} \right]_{0}^{500} = \left[ 25x - 0.025x^2 \right]_{0}^{500}$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.75rem; margin-bottom: 0.5rem;">
+              Substitute limits:
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--emerald-green); font-size: 1.15rem; font-weight: bold;">
+              $$CS = 25(500) - 0.025(500)^2$$
+              $$CS = 12,500 - 0.025(250,000) = 12,500 - 6,250 = 6,250\text{ thousand dollars}$$
+              $$CS = \$6,250,000\text{ (6.25 Million Dollars!)}$$
+            </div>
+          </div>
+
+          <!-- Geometric Check -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--warm-gold); margin-bottom: 0.5rem;">
+              Geometric Double-Check: Triangle Area Formula
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Because the demand curve is linear, the surplus region is an exact right-angled triangle:
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--warm-gold); font-size: 1.1rem; font-weight: bold;">
+              $$\text{Area} = \frac{1}{2} \times \text{Base} \times \text{Height} = \frac{1}{2} \times 500 \times (40 - 15) = \frac{1}{2} \times 500 \times 25 = 6,250\text{ thousand dollars}$$
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">
+              Both calculus integration and elementary geometry match to the exact dollar, proving the beauty and harmony of mathematics!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation to other examples -->
+      <section style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+        <a href="/example_profit_optimization.html" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Previous: Marginal Profit Optimization</span>
+        </a>
+        <a href="/index.html#examples-section" class="btn-primary">
+          <span>Explore All 7 Real-Life Applications</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="https://IkramulHoque-Arik.github.io" target="_blank" style="color: var(--text-muted); text-decoration: none;">Portfolio</a>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+      </div>
+    </footer>
+
+    <!-- Interactive Simulation Script -->
+    <script type="module">
+      import { sound, setupSimulationShortcuts, createSimulationHUD } from '/main.js';
+
+      const canvas = document.getElementById('surplusCanvas');
+      const ctx = canvas.getContext('2d');
+      const priceSlider = document.getElementById('priceSlider');
+      const priceSliderVal = document.getElementById('priceSliderVal');
+      const btnAnimate = document.getElementById('btnAnimateSurplus');
+      const btnReset = document.getElementById('btnResetPrice');
+      const surplusText = document.getElementById('surplusText');
+      const surplusIcon = document.getElementById('surplusIcon');
+
+      // Metric elements
+      const statPrice = document.getElementById('statPrice');
+      const statQuantity = document.getElementById('statQuantity');
+      const statSpending = document.getElementById('statSpending');
+      const statSurplus = document.getElementById('statSurplus');
+
+      let currentP = 15; // equilibrium price in dollars
+      let sliceAnimN = 50; // for Riemann rectangle animation
+      let isAnimating = false;
+      let animFrameId = null;
+
+      // Initialize Simulation HUD
+      const hud = createSimulationHUD({
+        container: canvas.parentElement,
+        status: 'Equilibrium',
+        moduleTitle: 'Consumer Surplus',
+        shortcuts: [
+          { key: 'Space', label: 'Animate Slices' },
+          { key: 'R', label: 'Reset to $15 Base' }
+        ],
+        position: 'top-right',
+        onToggle: toggleAnimate,
+        onReset: resetPrice
+      });
+
+      function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        draw();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      // Calculations
+      function getEquilibriumQuantity(p) {
+        return Math.max(0, (40 - p) / 0.05); // in thousands
+      }
+
+      function getConsumerSurplus(p) {
+        const q = getEquilibriumQuantity(p);
+        return 0.5 * q * (40 - p); // in thousands of dollars
+      }
+
+      function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const pad = { top: 35, right: 35, bottom: 45, left: 65 };
+        const gw = w - pad.left - pad.right;
+        const gh = h - pad.top - pad.bottom;
+
+        if (gw <= 50 || gh <= 50) return;
+
+        // X scale: 0 to 800 thousand rides
+        const maxX = 800;
+        const toScreenX = (x) => pad.left + (x / maxX) * gw;
+        // Y scale: 0 to 50 dollars per ride
+        const maxY = 50;
+        const toScreenY = (p) => pad.top + gh - (p / maxY) * gh;
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= maxX; x += 200) {
+          const sx = toScreenX(x);
+          ctx.beginPath();
+          ctx.moveTo(sx, pad.top);
+          ctx.lineTo(sx, pad.top + gh);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${x}k`, sx, pad.top + gh + 16);
+        }
+
+        for (let p = 0; p <= maxY; p += 10) {
+          const sy = toScreenY(p);
+          ctx.beginPath();
+          ctx.moveTo(pad.left, sy);
+          ctx.lineTo(pad.left + gw, sy);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`$${p}`, pad.left - 8, sy + 3);
+        }
+
+        // Axes bounds
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, pad.top);
+        ctx.lineTo(pad.left, pad.top + gh);
+        ctx.lineTo(pad.left + gw, pad.top + gh);
+        ctx.stroke();
+
+        // Axis Titles
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Weekly Ride Volume x (thousands of rides)', pad.left + gw / 2, h - 10);
+        ctx.save();
+        ctx.translate(pad.left - 45, pad.top + gh / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Price per Ride ($)', 0, 0);
+        ctx.restore();
+
+        const eqQ = getEquilibriumQuantity(currentP);
+
+        // 1. Shaded Producer Revenue / Consumer Spending (p* times q*)
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
+        ctx.fillRect(toScreenX(0), toScreenY(currentP), toScreenX(eqQ) - toScreenX(0), toScreenY(0) - toScreenY(currentP));
+
+        // Label on spending box
+        if (eqQ > 150) {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+          ctx.font = '11px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          const spendMil = ((currentP * eqQ) / 1000).toFixed(2);
+          ctx.fillText(`Consumer Spending = $${spendMil}M`, toScreenX(eqQ / 2), toScreenY(currentP / 2));
+        }
+
+        // 2. Shaded Consumer Surplus Triangle or Riemann Bars
+        const surplusGrad = ctx.createLinearGradient(0, toScreenY(40), 0, toScreenY(currentP));
+        surplusGrad.addColorStop(0, 'rgba(16, 185, 129, 0.55)');
+        surplusGrad.addColorStop(1, 'rgba(16, 185, 129, 0.15)');
+
+        if (sliceAnimN >= 50) {
+          // Smooth continuous triangle
+          ctx.fillStyle = surplusGrad;
+          ctx.beginPath();
+          ctx.moveTo(toScreenX(0), toScreenY(currentP));
+          ctx.lineTo(toScreenX(0), toScreenY(40));
+          ctx.lineTo(toScreenX(eqQ), toScreenY(currentP));
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Discrete Riemann bars demonstration
+          const numBars = Math.max(2, sliceAnimN);
+          const dx = eqQ / numBars;
+          for (let i = 0; i < numBars; i++) {
+            const bx = i * dx;
+            const bPrice = 40 - 0.05 * bx;
+            const barHeight = bPrice - currentP;
+            if (barHeight > 0) {
+              const sx1 = toScreenX(bx);
+              const sx2 = toScreenX(bx + dx);
+              const syTop = toScreenY(bPrice);
+              const syBot = toScreenY(currentP);
+
+              ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
+              ctx.fillRect(sx1, syTop, sx2 - sx1, syBot - syTop);
+              ctx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
+              ctx.lineWidth = 1;
+              ctx.strokeRect(sx1, syTop, sx2 - sx1, syBot - syTop);
+            }
+          }
+        }
+
+        // CS Text Callout inside triangle
+        if (eqQ > 200) {
+          const csX = toScreenX(eqQ * 0.3);
+          const csY = toScreenY(currentP + (40 - currentP) * 0.38);
+          ctx.fillStyle = '#34d399';
+          ctx.font = '700 13px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          const csMil = (getConsumerSurplus(currentP) / 1000).toFixed(2);
+          ctx.fillText(`Consumer Surplus (CS)`, csX, csY - 10);
+          ctx.font = '600 12px JetBrains Mono, monospace';
+          ctx.fillText(`$${csMil} Million Saved`, csX, csY + 8);
+        }
+
+        // 3. Demand Curve p(x) = 40 - 0.05x
+        ctx.strokeStyle = '#00f2fe';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(0), toScreenY(40));
+        ctx.lineTo(toScreenX(800), toScreenY(0));
+        ctx.stroke();
+
+        ctx.fillStyle = '#00f2fe';
+        ctx.font = '600 11px Outfit, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Demand Curve p(x) = 40 - 0.05x', toScreenX(40), toScreenY(38) - 8);
+
+        // 4. Horizontal Equilibrium Price Line p = p*
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, toScreenY(currentP));
+        ctx.lineTo(toScreenX(eqQ), toScreenY(currentP));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label on price line
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '600 11px Outfit, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Equilibrium Price p* = $${currentP}`, pad.left + 10, toScreenY(currentP) + 16);
+
+        // 5. Vertical Quantity Line to X Axis
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(eqQ), toScreenY(currentP));
+        ctx.lineTo(toScreenX(eqQ), pad.top + gh);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Equilibrium intersection point
+        const eqSx = toScreenX(eqQ);
+        const eqSy = toScreenY(currentP);
+
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.arc(eqSx, eqSy, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Tooltip above equilibrium point
+        ctx.fillStyle = 'rgba(11, 15, 25, 0.92)';
+        const tipW = 160;
+        const tipH = 36;
+        const tipX = Math.min(eqSx - tipW / 2, w - tipW - 10);
+        ctx.fillRect(tipX, eqSy - tipH - 12, tipW, tipH);
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tipX, eqSy - tipH - 12, tipW, tipH);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '600 11px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`(${Math.round(eqQ)}k rides, $${currentP}/ride)`, tipX + tipW / 2, eqSy - tipH + 11);
+
+        // Update DOM Stats
+        statPrice.textContent = `$${currentP.toFixed(2)} / ride`;
+        statQuantity.textContent = `${Math.round(eqQ * 1000).toLocaleString()} rides`;
+        statSpending.textContent = `$${((currentP * eqQ) * 1000).toLocaleString()}`;
+        const csTotal = getConsumerSurplus(currentP) * 1000;
+        statSurplus.textContent = `+$${csTotal.toLocaleString()}`;
+      }
+
+      function stepSliceAnim() {
+        if (!isAnimating) return;
+
+        sliceAnimN += 1;
+        if (sliceAnimN >= 50) {
+          sliceAnimN = 50;
+          isAnimating = false;
+          surplusText.textContent = 'Animate Riemann Slices';
+          surplusIcon.textContent = '✨';
+          sound.playChime();
+          if (hud) hud.setStatus('Equilibrium');
+        } else {
+          animFrameId = requestAnimationFrame(stepSliceAnim);
+        }
+        draw();
+      }
+
+      function toggleAnimate() {
+        if (isAnimating) {
+          isAnimating = false;
+          surplusText.textContent = 'Animate Riemann Slices';
+          surplusIcon.textContent = '✨';
+          if (animFrameId) cancelAnimationFrame(animFrameId);
+          if (hud) hud.setStatus('Paused');
+        } else {
+          isAnimating = true;
+          sliceAnimN = 2; // start with 2 chunky bars and smooth out to 50
+          surplusText.textContent = 'Smoothing Slices...';
+          surplusIcon.textContent = '⏸';
+          sound.playDrawSweep(2.5);
+          if (hud) hud.setStatus('Running');
+          animFrameId = requestAnimationFrame(stepSliceAnim);
+        }
+      }
+
+      function resetPrice() {
+        isAnimating = false;
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        currentP = 15;
+        sliceAnimN = 50;
+        priceSlider.value = 15;
+        priceSliderVal.textContent = '$15 per ride';
+        surplusText.textContent = 'Animate Riemann Slices';
+        surplusIcon.textContent = '✨';
+        if (hud) hud.setStatus('Equilibrium');
+        sound.playChime();
+        draw();
+      }
+
+      // Handlers
+      btnAnimate.addEventListener('click', toggleAnimate);
+      btnReset.addEventListener('click', resetPrice);
+
+      priceSlider.addEventListener('input', (e) => {
+        currentP = parseFloat(e.target.value);
+        priceSliderVal.textContent = `$${currentP} per ride`;
+        sliceAnimN = 50;
+        if (isAnimating) {
+          isAnimating = false;
+          surplusText.textContent = 'Animate Riemann Slices';
+          surplusIcon.textContent = '✨';
+        }
+        if (currentP === 15) {
+          if (hud) hud.setStatus('Equilibrium');
+        } else {
+          if (hud) hud.setStatus('Adjusted');
+        }
+        draw();
+      });
+
+      // Presets
+      document.getElementById('btnStandard').addEventListener('click', () => {
+        currentP = 15;
+        priceSlider.value = 15;
+        priceSliderVal.textContent = '$15 per ride';
+        sound.playChime();
+        draw();
+      });
+
+      document.getElementById('btnSurge').addEventListener('click', () => {
+        currentP = 25;
+        priceSlider.value = 25;
+        priceSliderVal.textContent = '$25 per ride';
+        sound.playClick();
+        draw();
+      });
+
+      document.getElementById('btnPromo').addEventListener('click', () => {
+        currentP = 10;
+        priceSlider.value = 10;
+        priceSliderVal.textContent = '$10 per ride';
+        sound.playClick();
+        draw();
+      });
+
+      // Global keyboard shortcuts
+      setupSimulationShortcuts({
+        onToggleAnimation: toggleAnimate,
+        onReset: resetPrice
+      });
+
+      // Initial run
+      resizeCanvas();
+      draw();
+    </script>
+  </body>
+</html>

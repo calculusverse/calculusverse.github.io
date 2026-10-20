@@ -1,0 +1,6 @@
+{
+  "name": "CalculusVerse",
+  "description": "An interactive, visual, and intuitive calculus learning universe for high school students featuring animated graphs, car physics velocity simulations, Riemann sums, and 3D surfaces.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

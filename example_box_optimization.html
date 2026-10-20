@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Box Optimization | CalculusVerse</title>
+    <meta name="description" content="Differential Calculus Optimization: Maximizing the volume of an open-top box by cutting corners." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation Lab</a>
+        <a href="/integration.html" class="nav-link">Integration Lab</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <div class="clean-meta" style="margin-bottom: 0.75rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">Home</a>
+        <span class="meta-dot">·</span>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+        <span class="meta-dot">·</span>
+        <span>Differential Calculus Application 02</span>
+      </div>
+
+      <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.75rem); margin-bottom: 0.5rem;">
+        Maximizing Box Volume: Packaging Optimization
+      </h1>
+      <p class="section-lead" style="max-width: 840px; margin-bottom: 2rem;">
+        How industrial packaging engineers use derivatives to manufacture shipping boxes holding maximum volume using the minimum amount of material.
+      </p>
+
+      <!-- Problem Statement Card -->
+      <section class="glass-panel" style="margin-bottom: 2rem; border-left: 3px solid var(--vibrant-purple);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--vibrant-purple); margin-bottom: 0.5rem;">
+          The Real-Life Problem
+        </h2>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          A factory produces open-top storage containers from flat rectangular sheets of cardboard measuring $20\text{ cm}$ in length and $12\text{ cm}$ in width. To fold the box, equal square corners of side length $x\text{ cm}$ are cut out from all four corners, and the remaining flaps are folded upwards.
+        </p>
+        <div class="math-display-card" style="margin-bottom: 1rem; text-align: center;">
+          <div style="font-size: 1.15rem; font-weight: bold; color: var(--neon-cyan);">
+            $$V(x) = x(20 - 2x)(12 - 2x)$$
+          </div>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6;">
+          <strong>Target Question:</strong><br />
+          What size square corner $x$ should be cut out to maximize the interior volume of the resulting box?
+        </p>
+      </section>
+
+      <!-- Interactive 2D & Graph Stage -->
+      <div class="workbench-layout" style="margin-bottom: 2.5rem;">
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <!-- Dual-view canvas: Left = Cardboard Sheet, Right = V(x) Curve -->
+          <div class="canvas-card" style="height: 440px; position: relative;">
+            <canvas id="boxCanvas"></canvas>
+            
+            <div style="position: absolute; top: 12px; left: 14px; background: rgba(11, 15, 25, 0.85); padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.8rem;">
+              <span>📦 Cutout Blueprint & Volume Curve</span>
+            </div>
+
+            <div style="position: absolute; top: 12px; right: 14px; background: rgba(157, 78, 221, 0.2); border: 1px solid var(--vibrant-purple); padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.8rem; color: var(--vibrant-purple); font-weight: 600;">
+              <span>Max at $x = 3.33\text{ cm}$</span>
+            </div>
+          </div>
+
+          <!-- Dimensional Summary -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Cut Corner ($x$)</div>
+              <div id="statCut" style="font-size: 1rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: bold;">3.33 cm</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Box Length ($20-2x$)</div>
+              <div id="statLen" style="font-size: 1rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: bold;">13.33 cm</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Box Width ($12-2x$)</div>
+              <div id="statWid" style="font-size: 1rem; font-family: var(--font-mono); color: var(--warm-gold); font-weight: bold;">5.33 cm</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Total Volume ($V$)</div>
+              <div id="statVol" style="font-size: 1rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: bold;">237.0 cm³</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Deck -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="glass-panel">
+            <h3 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.85rem;">
+              Corner Cut Slider
+            </h3>
+
+            <div class="slider-group" style="margin-bottom: 1rem;">
+              <div class="slider-label-row">
+                <span class="slider-name">Square Cut Size ($x$)</span>
+                <span class="slider-val" id="cutSliderVal">3.33 cm</span>
+              </div>
+              <input type="range" id="cutSlider" min="0.1" max="5.9" step="0.05" value="3.33" />
+            </div>
+
+            <div class="math-display-card" style="margin-bottom: 0.75rem;">
+              <div class="math-title">Derivative / Marginal Rate $V'(x)$</div>
+              <div id="dispVPrime" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--warm-gold);">
+                $$V'(3.33) = 0.00\text{ cm}^2$$
+              </div>
+            </div>
+
+            <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; margin-top: 0.5rem;">
+              Notice how the slope of the volume curve becomes <strong>flat ($V'=0$)</strong> at the exact peak!
+            </div>
+          </div>
+
+          <div class="glass-panel">
+            <button id="snapMaxBtn" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.65rem;">
+              <span>🎯 Snap to Optimal Peak ($x=3.33\text{ cm}$)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Mathematical Solution -->
+      <section class="glass-panel" style="padding: 2rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; margin-bottom: 1.25rem;">
+          Step-by-Step Calculus Solution
+        </h2>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; line-height: 1.7;">
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--neon-cyan); margin-bottom: 0.4rem;">
+              Step 1: Express the Volume Function
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              From the original sheet of $20 \times 12\text{ cm}$, removing corners of length $x$ leaves:
+            </p>
+            <div class="math-display-card" style="margin-bottom: 0.5rem;">
+              $$\text{Height} = x, \quad \text{Length} = 20 - 2x, \quad \text{Width} = 12 - 2x$$
+            </div>
+            <p style="color: var(--text-muted);">
+              Multiplying length $\times$ width $\times$ height gives the polynomial:
+            </p>
+            <div class="math-display-card">
+              $$V(x) = x(20 - 2x)(12 - 2x) = 4x^3 - 64x^2 + 240x$$
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--vibrant-purple); margin-bottom: 0.4rem;">
+              Step 2: Differentiate and Find Critical Points ($V'(x) = 0$)
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              To find local maximums or minimums, we find where the tangent slope is zero:
+            </p>
+            <div class="math-display-card" style="margin-bottom: 0.5rem;">
+              $$V'(x) = \frac{d}{dx}[4x^3 - 64x^2 + 240x] = 12x^2 - 128x + 240$$
+            </div>
+            <p style="color: var(--text-muted);">
+              Set $V'(x) = 0$ and divide the entire equation by $4$:
+            </p>
+            <div class="math-display-card" style="margin-bottom: 0.5rem;">
+              $$3x^2 - 32x + 60 = 0$$
+            </div>
+            <p style="color: var(--text-muted);">
+              Factor the quadratic:
+            </p>
+            <div class="math-display-card">
+              $$(3x - 10)(x - 6) = 0 \implies x = \frac{10}{3} \approx 3.333\text{ cm} \quad \text{or} \quad x = 6\text{ cm}$$
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.1rem; color: var(--emerald-green); margin-bottom: 0.4rem;">
+              Step 3: Test and Conclude
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              If $x = 6$, the width becomes $12 - 2(6) = 0\text{ cm}$, producing a zero-volume line. Thus, $x = \frac{10}{3}\text{ cm}$ is our valid solution.<br />
+              Substituting $x = \frac{10}{3}$ back into $V(x)$:
+            </p>
+            <div class="math-display-card">
+              $$V_{\text{max}} = \left(\frac{10}{3}\right)\left(20 - \frac{20}{3}\right)\left(12 - \frac{20}{3}\right) = \frac{6400}{27} \approx \mathbf{237.04\text{ cm}^3}$$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation to other examples -->
+      <section style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+        <a href="/example_velocity.html" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Previous: Instantaneous Velocity</span>
+        </a>
+        <a href="/example_distance_speed.html" class="btn-primary">
+          <span>Next: Total Distance from Speed</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div><strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)</div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">← Home</a>
+        <a href="/example_distance_speed.html" style="color: var(--text-muted); text-decoration: none;">Next Example: Distance from Speed →</a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { sound, setupSimulationShortcuts } from '/main.js';
+
+      const canvas = document.getElementById('boxCanvas');
+      const ctx = canvas.getContext('2d');
+      const cutSlider = document.getElementById('cutSlider');
+      const cutSliderVal = document.getElementById('cutSliderVal');
+      const snapMaxBtn = document.getElementById('snapMaxBtn');
+
+      let xCut = 3.33;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        draw();
+      }
+      window.addEventListener('resize', resize);
+
+      function calcVol(x) {
+        if (x <= 0 || x >= 6) return 0;
+        return x * (20 - 2 * x) * (12 - 2 * x);
+      }
+      function calcVPrime(x) {
+        return 12 * x * x - 128 * x + 240;
+      }
+
+      function draw() {
+        const width = canvas.width / window.devicePixelRatio;
+        const height = canvas.height / window.devicePixelRatio;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Split canvas: Left half = 2D Cardboard Blueprint, Right half = V(x) Curve
+        const midX = width * 0.44;
+
+        // 1. LEFT HALF: Cardboard Cutout Blueprint
+        const cardW = 180;
+        const cardH = (12 / 20) * cardW; // 108px
+        const originX = (midX - cardW) / 2;
+        const originY = (height - cardH) / 2;
+
+        const cutPx = (xCut / 20) * cardW;
+
+        // Base sheet
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.fillRect(originX, originY, cardW, cardH);
+        ctx.strokeRect(originX, originY, cardW, cardH);
+
+        // Cutout corners (4 squares)
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1;
+
+        // Top-left
+        ctx.fillRect(originX, originY, cutPx, cutPx);
+        ctx.strokeRect(originX, originY, cutPx, cutPx);
+        // Top-right
+        ctx.fillRect(originX + cardW - cutPx, originY, cutPx, cutPx);
+        ctx.strokeRect(originX + cardW - cutPx, originY, cutPx, cutPx);
+        // Bottom-left
+        ctx.fillRect(originX, originY + cardH - cutPx, cutPx, cutPx);
+        ctx.strokeRect(originX, originY + cardH - cutPx, cutPx, cutPx);
+        // Bottom-right
+        ctx.fillRect(originX + cardW - cutPx, originY + cardH - cutPx, cutPx, cutPx);
+        ctx.strokeRect(originX + cardW - cutPx, originY + cardH - cutPx, cutPx, cutPx);
+
+        // Fold lines (dashed)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.setLineDash([4, 4]);
+        ctx.strokeRect(originX + cutPx, originY + cutPx, cardW - 2 * cutPx, cardH - 2 * cutPx);
+        ctx.setLineDash([]);
+
+        // Dimension labels
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px JetBrains Mono';
+        ctx.fillText('20 cm', originX + cardW / 2 - 15, originY - 8);
+        ctx.fillText('12 cm', originX - 38, originY + cardH / 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText(`x=${xCut.toFixed(1)}`, originX + 2, originY + cutPx + 12);
+
+        // 2. RIGHT HALF: Volume Curve V(x)
+        const gLeft = midX + 45;
+        const gRight = width - 25;
+        const gTop = 35;
+        const gBottom = height - 40;
+        const gWidth = gRight - gLeft;
+        const gHeight = gBottom - gTop;
+
+        const maxDomain = 6;
+        const maxRange = 260;
+
+        function toGX(x) { return gLeft + (x / maxDomain) * gWidth; }
+        function toGY(v) { return gBottom - (v / maxRange) * gHeight; }
+
+        // Axes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(gLeft, gBottom);
+        ctx.lineTo(gRight, gBottom);
+        ctx.moveTo(gLeft, gTop);
+        ctx.lineTo(gLeft, gBottom);
+        ctx.stroke();
+
+        // Numerals
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px JetBrains Mono';
+        for (let x = 1; x <= 5; x++) {
+          ctx.fillText(x + 'cm', toGX(x) - 10, gBottom + 16);
+        }
+        for (let v = 50; v <= 250; v += 50) {
+          ctx.fillText(v.toString(), gLeft - 32, toGY(v) + 4);
+        }
+
+        // Draw V(x) curve
+        ctx.strokeStyle = '#9d4edd';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(157, 78, 221, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+          const x = (i / 100) * 6;
+          const v = calcVol(x);
+          const px = toGX(x);
+          const py = toGY(v);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Current point on curve
+        const curV = calcVol(xCut);
+        const ptX = toGX(xCut);
+        const ptY = toGY(curV);
+
+        // Tangent line on curve
+        const vPrime = calcVPrime(xCut);
+        const span = 0.8;
+        const tx1 = Math.max(0, xCut - span);
+        const tx2 = Math.min(6, xCut + span);
+        const vy1 = curV + (vPrime / 40) * (tx1 - xCut);
+        const vy2 = curV + (vPrime / 40) * (tx2 - xCut);
+
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toGX(tx1), toGY(vy1));
+        ctx.lineTo(toGX(tx2), toGY(vy2));
+        ctx.stroke();
+
+        // Point circle
+        ctx.fillStyle = '#00f2fe';
+        ctx.beginPath();
+        ctx.arc(ptX, ptY, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Optimal peak marker
+        const optX = toGX(10 / 3);
+        const optY = toGY(6400 / 27);
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.5)';
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(optX, gBottom);
+        ctx.lineTo(optX, optY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        updateHUD();
+      }
+
+      function updateHUD() {
+        const curLen = Math.max(0, 20 - 2 * xCut);
+        const curWid = Math.max(0, 12 - 2 * xCut);
+        const curVol = calcVol(xCut);
+        const vPrime = calcVPrime(xCut);
+
+        cutSliderVal.textContent = xCut.toFixed(2) + ' cm';
+        document.getElementById('statCut').textContent = `${xCut.toFixed(2)} cm`;
+        document.getElementById('statLen').textContent = `${curLen.toFixed(2)} cm`;
+        document.getElementById('statWid').textContent = `${curWid.toFixed(2)} cm`;
+        document.getElementById('statVol').textContent = `${curVol.toFixed(1)} cm³`;
+
+        if (window.katex) {
+          window.katex.render(`V'(${xCut.toFixed(2)}) = ${vPrime.toFixed(2)}\\text{ cm}^2`, document.getElementById('dispVPrime'), { throwOnError: false });
+        }
+      }
+
+      cutSlider.addEventListener('input', (e) => {
+        xCut = parseFloat(e.target.value);
+        draw();
+      });
+
+      snapMaxBtn.addEventListener('click', () => {
+        xCut = 3.33;
+        cutSlider.value = 3.33;
+        draw();
+        sound.playChime();
+      });
+
+      setupSimulationShortcuts({
+        onToggleAnimation: () => {
+          snapMaxBtn.click();
+        },
+        onReset: () => {
+          xCut = 1.5;
+          cutSlider.value = 1.5;
+          draw();
+          sound.playChime();
+        }
+      });
+
+      setTimeout(resize, 100);
+    </script>
+  </body>
+</html>

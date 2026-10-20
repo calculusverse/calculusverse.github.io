@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curriculum Map | CalculusVerse</title>
+    <meta name="description" content="Structured 4-module calculus curriculum designed for 10th-grade students: precalculus, differentiation, integration, and 3D multivariable surfaces." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN -->
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link active">Curriculum Map</a>
+        <a href="#real-world-labs" class="nav-link">Real-World Labs (7)</a>
+        <a href="/precalculus.html" class="nav-link">Precalculus</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation</a>
+        <a href="/integration.html" class="nav-link">Integration</a>
+        <a href="/multivariable_3d.html" class="nav-link">3D Multivariable</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <div style="max-width: 800px; margin: 0 auto 2.5rem; text-align: center;">
+        <div class="clean-meta" style="justify-content: center; margin-bottom: 0.75rem;">
+          <span>Curriculum Track</span>
+          <span class="meta-dot">·</span>
+          <span>4 Progressive Modules</span>
+          <span class="meta-dot">·</span>
+          <span>~45 min total interactive time</span>
+        </div>
+        <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3rem);">
+          Interactive Curriculum Map
+        </h1>
+        <p class="section-lead">
+          Follow this structured journey from basic function shifts to 3D mountain climbing. Each module contains fully interactive sandboxes with real-time mathematical feedback.
+        </p>
+      </div>
+
+      <!-- Curriculum Grid -->
+      <div class="curriculum-grid">
+        <!-- Module 1: Precalculus -->
+        <a href="/precalculus.html" class="curriculum-card">
+          <div>
+            <div class="card-track-number">MODULE 01 · FOUNDATIONS</div>
+            <h2 class="card-title">Precalculus & Functions</h2>
+            <div class="clean-meta" style="margin-bottom: 1rem;">
+              <span>Beginner</span>
+              <span class="meta-dot">·</span>
+              <span>10 min exploration</span>
+              <span class="meta-dot">·</span>
+              <span>Algebra prerequisite</span>
+            </div>
+            <p class="card-desc">
+              Understand how equations bend, stretch, and shift across Cartesian coordinates. Discover the secant line between two points and see what happens when the gap $\Delta x$ shrinks toward zero.
+            </p>
+            <div class="math-display-card" style="margin-bottom: 1.25rem;">
+              <div class="math-title">Core Geometric Idea</div>
+              <div class="math-formula" data-katex="m_{\text{secant}} = \frac{f(x + \Delta x) - f(x)}{\Delta x} \longrightarrow f'(x)" style="font-size: 1.05rem; color: var(--neon-cyan); min-height: 1.8rem; display: flex; align-items: center;">
+                $m_{\text{secant}} = \frac{f(x + \Delta x) - f(x)}{\Delta x} \longrightarrow f'(x)$
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Explore Module 1</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </a>
+
+        <!-- Module 2: Differentiation -->
+        <a href="/differentiation.html" class="curriculum-card">
+          <div>
+            <div class="card-track-number">MODULE 02 · RATES OF CHANGE</div>
+            <h2 class="card-title">Differential Calculus & Tangents</h2>
+            <div class="clean-meta" style="margin-bottom: 1rem;">
+              <span>Core Foundation</span>
+              <span class="meta-dot">·</span>
+              <span>15 min exploration</span>
+              <span class="meta-dot">·</span>
+              <span>Velocity Physics</span>
+            </div>
+            <p class="card-desc">
+              Watch functions draw in an animated 3-second sweep! Slide along curves to calculate exact instantaneous tangent slopes and watch a synchronized car drive across a road based on $s(t)$ and $v(t)$.
+            </p>
+            <div class="math-display-card" style="margin-bottom: 1.25rem;">
+              <div class="math-title">Instantaneous Velocity</div>
+              <div class="math-formula" data-katex="v(t) = \frac{ds}{dt} = \lim_{\Delta t \to 0} \frac{s(t+\Delta t) - s(t)}{\Delta t}" style="font-size: 1.05rem; color: var(--vibrant-purple); min-height: 1.8rem; display: flex; align-items: center;">
+                $v(t) = \frac{ds}{dt} = \lim_{\Delta t \to 0} \frac{s(t+\Delta t) - s(t)}{\Delta t}$
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Explore Module 2</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </a>
+
+        <!-- Module 3: Integration -->
+        <a href="/integration.html" class="curriculum-card">
+          <div>
+            <div class="card-track-number">MODULE 03 · ACCUMULATION</div>
+            <h2 class="card-title">Integral Calculus & Riemann Sums</h2>
+            <div class="clean-meta" style="margin-bottom: 1rem;">
+              <span>Area Under Curves</span>
+              <span class="meta-dot">·</span>
+              <span>12 min exploration</span>
+              <span class="meta-dot">·</span>
+              <span>$n=1$ to $50$ Slices</span>
+            </div>
+            <p class="card-desc">
+              Estimate irregular curved shapes using rectangular bars. Compare Left, Right, Midpoint, and Trapezoidal rules in real-time, observing how numerical sums converge directly into the definite integral.
+            </p>
+            <div class="math-display-card" style="margin-bottom: 1.25rem;">
+              <div class="math-title">Definite Integral Limit</div>
+              <div class="math-formula" data-katex="\int_a^b f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i^*)\,\Delta x" style="font-size: 1.05rem; color: var(--emerald-green); min-height: 1.8rem; display: flex; align-items: center;">
+                $\int_a^b f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i^*)\,\Delta x$
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Explore Module 3</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </a>
+
+        <!-- Module 4: 3D Multivariable -->
+        <a href="/multivariable_3d.html" class="curriculum-card">
+          <div>
+            <div class="card-track-number">MODULE 04 · 3D SPACE</div>
+            <h2 class="card-title">3D Multivariable & Gradients</h2>
+            <div class="clean-meta" style="margin-bottom: 1rem;">
+              <span>Advanced Visual</span>
+              <span class="meta-dot">·</span>
+              <span>15 min exploration</span>
+              <span class="meta-dot">·</span>
+              <span>Three.js WebGL</span>
+            </div>
+            <p class="card-desc">
+              Ascend beyond flat 2D planes into 3D topography. Rotate saddles and ripple waves with your mouse, manipulate coordinate probes, balance a dynamic tangent plane, and follow the steepest gradient vector.
+            </p>
+            <div class="math-display-card" style="margin-bottom: 1.25rem;">
+              <div class="math-title">3D Gradient Vector</div>
+              <div class="math-formula" data-katex="\nabla f(x, y) = \left\langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right\rangle" style="font-size: 1.05rem; color: var(--warm-gold); min-height: 1.8rem; display: flex; align-items: center;">
+                $\nabla f(x, y) = \left\langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right\rangle$
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Explore Module 4</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </a>
+      </div>
+
+      <!-- Real-World Applications Section -->
+      <section id="real-world-labs" style="margin-top: 4.5rem; scroll-margin-top: 5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div class="clean-meta" style="justify-content: center; margin-bottom: 0.75rem;">
+            <span>Real-World Labs</span>
+            <span class="meta-dot">·</span>
+            <span>7 Interactive Case Studies</span>
+            <span class="meta-dot">·</span>
+            <span>Applied Physics & Economics</span>
+          </div>
+          <h2 class="section-title">Applied Calculus Case Studies</h2>
+          <p class="section-lead">Explore how derivatives and integrals solve actual engineering, physics, and business problems.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          <!-- 1. Instantaneous Velocity -->
+          <a href="/example_velocity.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--neon-cyan);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: 600;">APP 01 · KINEMATICS</span>
+                <span style="font-size: 1.25rem;">🚗</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Instantaneous Velocity (Speedometer)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Why average speed isn't enough. Find exact speedometer readings from position $s(t) = 2t^2 + 4t$.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--neon-cyan); font-weight: bold;">
+                  $$v(t) = s'(t) = 4t + 4$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--neon-cyan); font-weight: 600;">
+              <span>Open Velocity Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 2. Maximizing Box Volume -->
+          <a href="/example_box_optimization.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--vibrant-purple);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: 600;">APP 02 · OPTIMIZATION</span>
+                <span style="font-size: 1.25rem;">📦</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Maximizing Box Volume (Packaging)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Cut square corners from a $20 \times 12\text{ cm}$ sheet to maximize packaging storage volume.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--vibrant-purple); font-weight: bold;">
+                  $$V'(x) = 0 \implies x \approx 2.43\text{ cm}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--vibrant-purple); font-weight: 600;">
+              <span>Open Box Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 3. Total Distance from Speed -->
+          <a href="/example_distance_speed.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--emerald-green);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: 600;">APP 03 · ACCUMULATION</span>
+                <span style="font-size: 1.25rem;">🚅</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Total Distance from Speed (Express Train)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Accumulating the area under changing velocity $v(t) = -15t^2 + 60t + 80$ over $4$ hours.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--emerald-green); font-weight: bold;">
+                  $$\text{Dist} = \int_0^4 v(t)\,dt = 480\text{ km}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--emerald-green); font-weight: 600;">
+              <span>Open Train Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 4. Work Done by Variable Force -->
+          <a href="/example_rocket_work.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--neon-cyan);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: 600;">APP 04 · AEROSPACE</span>
+                <span style="font-size: 1.25rem;">🚀</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Work Done by Variable Force (Rocket)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Lifting a fuel-burning rocket $m(x) = 2,000 - 0.1x$ from $0$ to $10,000\text{ m}$ in Earth gravity.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--neon-cyan); font-weight: bold;">
+                  $$W = \int_0^{10000} 9.8(2000 - 0.1x)\,dx = 147\text{ MJ}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--neon-cyan); font-weight: 600;">
+              <span>Open Rocket Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 5. Escape Velocity & Related Rates -->
+          <a href="/example_escape_velocity.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--vibrant-purple);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: 600;">APP 05 · RELATED RATES</span>
+                <span style="font-size: 1.25rem;">🪐</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Escape Velocity & Related Rates
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Finding tool acceleration $\frac{dv}{dt} = \frac{dv}{dr}\frac{dr}{dt}$ at $1,500\text{ km}$ above a lunar outpost.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--vibrant-purple); font-weight: bold;">
+                  $$a = \frac{GM}{r^2} \approx 1.78\text{ m/s}^2$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--vibrant-purple); font-weight: 600;">
+              <span>Open Orbital Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 6. Marginal Cost & Revenue: Maximizing Profit -->
+          <a href="/example_profit_optimization.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--warm-gold);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--warm-gold); font-weight: 600;">APP 06 · ECONOMICS</span>
+                <span style="font-size: 1.25rem;">📱</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Marginal Profit Analysis (Smartphones)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Finding where Marginal Revenue equals Marginal Cost ($MR = MC$) for peak $\$1.24\text{M}$ weekly profit.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--warm-gold); font-weight: bold;">
+                  $$MR = MC \implies x = 250\text{k units}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--warm-gold); font-weight: 600;">
+              <span>Open Profit Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 7. Consumer Surplus -->
+          <a href="/example_consumer_surplus.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--emerald-green);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: 600;">APP 07 · MARKET SURPLUS</span>
+                <span style="font-size: 1.25rem;">🚕</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+                Consumer Surplus (Rideshare Pricing)
+              </h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.8rem;">
+                Integrating savings under demand curve $p(x) = 40 - 0.05x$ at $\$15$ equilibrium to find $\$6.25\text{M}$ surplus.
+              </p>
+              <div class="math-display-card" style="padding: 0.5rem 0.7rem; margin-bottom: 0.8rem;">
+                <div style="font-size: 0.88rem; color: var(--emerald-green); font-weight: bold;">
+                  $$CS = \int_0^{500} (25 - 0.05x)\,dx = \$6,250,000$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: var(--emerald-green); font-weight: 600;">
+              <span>Open Surplus Lab</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Pedagogical Guidance for 10th Graders -->
+      <section style="margin-top: 3.5rem;" class="glass-panel">
+        <h3 style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+          How to Get the Most Out of CalculusVerse
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+          <div>
+            <div style="font-weight: 600; color: var(--neon-cyan); margin-bottom: 0.35rem;">1. Play Before You Read</div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Drag the sliders first! Watch how the curves flex and how the car accelerates. Building physical intuition first makes formulas instantly obvious.
+            </p>
+          </div>
+          <div>
+            <div style="font-weight: 600; color: var(--vibrant-purple); margin-bottom: 0.35rem;">2. Notice the "Speedometer" Analogy</div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              In Module 2, the derivative $f'(x)$ is nothing more than your speedometer reading at a frozen millisecond in time.
+            </p>
+          </div>
+          <div>
+            <div style="font-weight: 600; color: var(--emerald-green); margin-bottom: 0.35rem;">3. Watch Slices Vanish</div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              In Module 3, slide $n$ from 3 to 50. Notice how the staircase of rectangular blocks smooths out to match the real curve with near 0% error.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="https://IkramulHoque-Arik.github.io" target="_blank" style="color: var(--text-muted); text-decoration: none;">Portfolio</a>
+        <a href="/" style="color: var(--text-muted); text-decoration: none;">Home</a>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

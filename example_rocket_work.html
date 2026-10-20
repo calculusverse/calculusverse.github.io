@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Work Done by Variable Force (Rocket) | CalculusVerse</title>
+    <meta name="description" content="Integral Calculus Real-Life Example: Calculating total work required to launch a fuel-burning rocket into space." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation Lab</a>
+        <a href="/integration.html" class="nav-link">Integration Lab</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <!-- Breadcrumb -->
+      <div class="clean-meta" style="margin-bottom: 0.75rem;">
+        <a href="/" style="color: var(--neon-cyan); text-decoration: none;">Home</a>
+        <span class="meta-dot">·</span>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+        <span class="meta-dot">·</span>
+        <span>Integral Calculus Application 04</span>
+      </div>
+
+      <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.75rem); margin-bottom: 0.5rem;">
+        Work Done by a Variable Force: Rocket Ascent
+      </h1>
+      <p class="section-lead" style="max-width: 840px; margin-bottom: 2rem;">
+        When a rocket burns through tons of propellants each second, its weight continuously drops. How definite integrals compute the exact energy (Joules) needed to reach orbit.
+      </p>
+
+      <!-- Problem Statement Card -->
+      <section class="glass-panel" style="margin-bottom: 2rem; border-left: 3px solid var(--emerald-green);">
+        <h2 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+          The Real-Life Problem
+        </h2>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.65; margin-bottom: 0.75rem;">
+          A rocket payload weighs $2,000\text{ kg}$ at launch. As it blasts straight up into space, it burns fuel at a constant rate, causing it to lose weight as it rises. Its total mass (in $\text{kg}$) at a height of $x$ meters is modeled by:
+        </p>
+        <div class="math-display-card" style="margin-bottom: 1rem; text-align: center;">
+          <div style="font-size: 1.25rem; font-weight: bold; color: var(--neon-cyan);">
+            $$m(x) = 2,000 - 0.1x$$
+          </div>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6;">
+          <strong>Target Question:</strong><br />
+          How much work (in Joules) is required to lift the rocket from the ground ($x = 0$) to an altitude of $10,000\text{ m}$? (Assume standard earth gravity $g \approx 9.8\text{ m/s}^2$).
+        </p>
+      </section>
+
+      <!-- Interactive Dual Canvas Stage -->
+      <div class="workbench-layout" style="margin-bottom: 2.5rem;">
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div class="canvas-card" style="height: 440px; position: relative;">
+            <canvas id="rocketCanvas"></canvas>
+            
+            <div style="position: absolute; top: 12px; left: 14px; background: rgba(11, 15, 25, 0.85); padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.8rem;">
+              <span>🚀 Launch Gantry & Force Curve $F(x)$</span>
+            </div>
+          </div>
+
+          <!-- Rocket Stats Ribbon -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Current Altitude ($x$)</div>
+              <div id="statAlt" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--neon-cyan); font-weight: bold;">0 m</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Mass $m(x)$</div>
+              <div id="statMass" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--vibrant-purple); font-weight: bold;">2,000 kg</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Gravity Force $F(x)$</div>
+              <div id="statForce" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--warm-gold); font-weight: bold;">19.60 kN</div>
+            </div>
+            <div class="math-display-card" style="padding: 0.6rem 0.8rem;">
+              <div class="math-title">Work Done ($W$)</div>
+              <div id="statWork" style="font-size: 1.05rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: bold;">0.0 MJ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Deck -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            Flight Controls & Parameters
+          </h3>
+
+          <!-- Altitude Scrubber -->
+          <div class="control-row" style="margin-bottom: 1.25rem;">
+            <div class="control-label">
+              <span>Altitude Target $x$:</span>
+              <span id="altSliderVal" style="color: var(--neon-cyan); font-family: var(--font-mono); font-weight: 600;">10,000 m</span>
+            </div>
+            <input type="range" id="altSlider" min="0" max="10000" step="100" value="10000" style="width: 100%;" />
+            <div class="slider-ticks" style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+              <span>0 m (Launchpad)</span>
+              <span>5,000 m</span>
+              <span>10,000 m (Target)</span>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 500;">
+              Flight Scenarios:
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <button class="preset-btn active" id="btnPresetFull" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                🎯 Full Ascent: 0 to 10,000 m ($W = 147\text{ MJ}$)
+              </button>
+              <button class="preset-btn" id="btnPresetHalf" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                ☁️ Lower Atmosphere: 0 to 5,000 m ($W = 85.75\text{ MJ}$)
+              </button>
+              <button class="preset-btn" id="btnPresetConstant" style="text-align: left; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer;">
+                ⚓ Compare: If Rocket Burned No Fuel ($W = 196\text{ MJ}$)
+              </button>
+            </div>
+          </div>
+
+          <!-- Play / Reset Buttons -->
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <button class="btn-primary" id="btnLaunch" style="flex: 1; padding: 0.65rem 1rem;">
+              <span id="launchIcon">🚀</span>
+              <span id="launchText">Launch Rocket</span>
+              <span class="kbd-hint">Space</span>
+            </button>
+            <button class="btn-secondary" id="btnResetRocket" style="padding: 0.65rem 1rem;">
+              <span>Reset</span>
+              <span class="kbd-hint">R</span>
+            </button>
+          </div>
+
+          <!-- Key Takeaway Card -->
+          <div class="math-display-card" style="border-left: 2px solid var(--emerald-green); background: rgba(16, 185, 129, 0.05); padding: 0.85rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--emerald-green); margin-bottom: 0.25rem;">
+              💡 The High Schooler's Key Intuition
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              In Middle School, you learned $\text{Work} = \text{Force} \times \text{Distance}$. But that formula only works when force stays constant! In the real world, rockets get lighter every second. The integral $\int F(x)\,dx$ is simply adding up millions of tiny $\Delta x$ force slices!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete Mathematical Solution & Proof -->
+      <section class="glass-panel" style="margin-bottom: 2rem;">
+        <h2 class="section-title" style="font-size: 1.45rem; margin-bottom: 0.75rem;">
+          Step-by-Step Mathematical Solution
+        </h2>
+        <p class="section-lead" style="margin-bottom: 1.5rem;">
+          Here is how to solve this exact AP Calculus and physics examination problem with rigor:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Step 1 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.5rem;">
+              Step 1: Formulate the Downward Gravitational Force Function $F(x)$
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              By Newton's Second Law, the gravitational downward weight that the rocket engine must counteract at height $x$ is:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$F(x) = m(x) \cdot g = (2,000 - 0.1x) \times 9.8$$
+              $$F(x) = 19,600 - 0.98x \quad \text{Newtons (N)}$$
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-dim); margin-top: 0.5rem;">
+              • At the launchpad ($x = 0$): $F(0) = 19,600\text{ N}$ ($19.6\text{ kN}$).<br />
+              • At target altitude ($x = 10,000\text{ m}$): $F(10,000) = 19,600 - 9,800 = 9,800\text{ N}$ (exactly half its initial weight, having burned $1,000\text{ kg}$ of fuel!).
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--vibrant-purple); margin-bottom: 0.5rem;">
+              Step 2: Set Up the Riemann Sum and Definite Integral
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Divide the $10,000\text{-meter}$ flight path into $n$ tiny height increments of length $\Delta x$. Over any small slice, the force is roughly constant. The work $\Delta W_i$ to raise the rocket through slice $i$ is:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$\Delta W_i \approx F(x_i) \cdot \Delta x = (19,600 - 0.98x_i)\,\Delta x$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+              Taking the limit as the slices shrink ($\Delta x \to 0$ and $n \to \infty$) gives the definite integral:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$W = \int_{0}^{10,000} F(x)\,dx = \int_{0}^{10,000} (19,600 - 0.98x)\,dx$$
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.5rem;">
+              Step 3: Evaluate Using the Fundamental Theorem of Calculus
+            </h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.75rem;">
+              Find the anti-derivative with the power rule:
+            </p>
+            <div class="math-display-card" style="text-align: center;">
+              $$W = \left[ 19,600x - 0.98 \cdot \frac{x^2}{2} \right]_{0}^{10,000} = \left[ 19,600x - 0.49x^2 \right]_{0}^{10,000}$$
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+              Substitute the upper limit $x = 10,000$ and lower limit $x = 0$:
+            </p>
+            <div class="math-display-card" style="text-align: center; color: var(--emerald-green); font-size: 1.15rem; font-weight: bold;">
+              $$W = 19,600(10,000) - 0.49(10,000)^2$$
+              $$W = 196,000,000 - 0.49(100,000,000) = 196,000,000 - 49,000,000$$
+              $$W = 147,000,000\text{ Joules} = 147\text{ Megajoules (MJ)}$$
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.2);">
+              <span style="color: var(--neon-cyan); font-weight: 600;">🚀 Engineering Insight:</span>
+              <span style="font-size: 0.88rem; color: var(--text-muted);">
+                If the rocket did not burn fuel and remained at its full $2,000\text{ kg}$ weight the whole time, the work would have been $19,600 \times 10,000 = 196\text{ MJ}$. Burning fuel saved $49\text{ MJ}$ of energy—the exact reason modern aerospace uses multi-stage liquid propellant rockets!
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation to other examples -->
+      <section style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+        <a href="/example_distance_speed.html" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Previous: Total Distance from Speed</span>
+        </a>
+        <a href="/example_escape_velocity.html" class="btn-primary">
+          <span>Next: Escape Velocity & Related Rates</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="https://IkramulHoque-Arik.github.io" target="_blank" style="color: var(--text-muted); text-decoration: none;">Portfolio</a>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+      </div>
+    </footer>
+
+    <!-- Interactive Rocket Simulation Script -->
+    <script type="module">
+      import { sound, setupSimulationShortcuts, createSimulationHUD } from '/main.js';
+
+      const canvas = document.getElementById('rocketCanvas');
+      const ctx = canvas.getContext('2d');
+      const altSlider = document.getElementById('altSlider');
+      const altSliderVal = document.getElementById('altSliderVal');
+      const btnLaunch = document.getElementById('btnLaunch');
+      const btnReset = document.getElementById('btnResetRocket');
+      const launchText = document.getElementById('launchText');
+      const launchIcon = document.getElementById('launchIcon');
+
+      // Metric elements
+      const statAlt = document.getElementById('statAlt');
+      const statMass = document.getElementById('statMass');
+      const statForce = document.getElementById('statForce');
+      const statWork = document.getElementById('statWork');
+
+      let currentAlt = 0; // 0 to 10000 m
+      let targetAlt = 10000;
+      let isLaunching = false;
+      let animFrameId = null;
+      let isConstantMassMode = false;
+
+      // Initialize Simulation HUD
+      const hud = createSimulationHUD({
+        container: canvas.parentElement,
+        status: 'Paused',
+        moduleTitle: 'Rocket Work',
+        shortcuts: [
+          { key: 'Space', label: 'Toggle Launch' },
+          { key: 'R', label: 'Reset Launchpad' }
+        ],
+        position: 'top-right',
+        onToggle: toggleLaunch,
+        onReset: resetLaunch
+      });
+
+      function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        draw();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      // Force function calculation
+      function getForce(x) {
+        if (isConstantMassMode) return 2000 * 9.8; // 19,600 N constant
+        const mass = Math.max(1000, 2000 - 0.1 * x);
+        return mass * 9.8;
+      }
+
+      // Work function calculation
+      function getWork(x) {
+        if (isConstantMassMode) return 19600 * x;
+        return 19600 * x - 0.49 * (x * x);
+      }
+
+      function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const dividerX = Math.max(220, w * 0.38);
+
+        // ----------------------------------------------------
+        // LEFT STAGE: ROCKET LAUNCH SILO & ATMOSPHERE
+        // ----------------------------------------------------
+        // Sky gradient from sea-level cyan-blue to deep space black
+        const skyGrad = ctx.createLinearGradient(0, h, 0, 0);
+        skyGrad.addColorStop(0, '#0c2340');
+        skyGrad.addColorStop(0.35, '#08172c');
+        skyGrad.addColorStop(0.7, '#070b19');
+        skyGrad.addColorStop(1, '#02040a');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, dividerX, h);
+
+        // Starfield in upper atmosphere
+        ctx.fillStyle = '#ffffff';
+        const seedStars = [
+          {x: 40, y: 30, r: 1.2}, {x: 90, y: 70, r: 0.8}, {x: 160, y: 45, r: 1.5},
+          {x: 120, y: 120, r: 1.0}, {x: 50, y: 150, r: 0.9}, {x: 180, y: 100, r: 1.1}
+        ];
+        seedStars.forEach(s => {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Launchpad ground & tower
+        const groundY = h - 50;
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, groundY, dividerX, 50);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, groundY);
+        ctx.lineTo(dividerX, groundY);
+        ctx.stroke();
+
+        // Launch gantry scaffolding
+        ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+        ctx.lineWidth = 2;
+        const gantryX = 35;
+        ctx.beginPath();
+        ctx.moveTo(gantryX, groundY);
+        ctx.lineTo(gantryX, 80);
+        ctx.moveTo(gantryX + 25, groundY);
+        ctx.lineTo(gantryX + 25, 80);
+        // cross braces
+        for (let gy = groundY; gy > 80; gy -= 30) {
+          ctx.moveTo(gantryX, gy);
+          ctx.lineTo(gantryX + 25, gy - 30);
+          ctx.moveTo(gantryX + 25, gy);
+          ctx.lineTo(gantryX, gy - 30);
+        }
+        ctx.stroke();
+
+        // Calculate rocket pixel Y
+        // 0 m -> groundY - 20, 10,000 m -> 50px
+        const maxFlightH = groundY - 70;
+        const rocketY = groundY - 20 - (currentAlt / 10000) * maxFlightH;
+        const rocketX = dividerX * 0.58;
+
+        // Exhaust plume when launching
+        if (isLaunching || currentAlt > 0) {
+          ctx.save();
+          const flameH = isLaunching ? 25 + Math.random() * 12 : 12;
+          const flameGrad = ctx.createLinearGradient(rocketX, rocketY + 25, rocketX, rocketY + 25 + flameH);
+          flameGrad.addColorStop(0, '#ffffff');
+          flameGrad.addColorStop(0.3, '#fbbf24');
+          flameGrad.addColorStop(0.7, '#f97316');
+          flameGrad.addColorStop(1, 'transparent');
+          ctx.fillStyle = flameGrad;
+          ctx.beginPath();
+          ctx.moveTo(rocketX - 8, rocketY + 22);
+          ctx.lineTo(rocketX + 8, rocketY + 22);
+          ctx.lineTo(rocketX, rocketY + 22 + flameH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Draw Rocket Body
+        ctx.save();
+        ctx.translate(rocketX, rocketY);
+
+        // Fins
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.moveTo(-10, 15);
+        ctx.lineTo(-18, 25);
+        ctx.lineTo(-8, 22);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(10, 15);
+        ctx.lineTo(18, 25);
+        ctx.lineTo(8, 22);
+        ctx.fill();
+
+        // Fuselage
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(-10, -15, 20, 36, [10, 10, 4, 4]);
+        ctx.fill();
+
+        // Nose cone
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(-10, -15);
+        ctx.quadraticCurveTo(0, -32, 10, -15);
+        ctx.fill();
+
+        // Porthole window
+        ctx.fillStyle = '#0284c7';
+        ctx.beginPath();
+        ctx.arc(0, -6, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.restore();
+
+        // Altitude marker flag next to rocket
+        ctx.fillStyle = 'rgba(0, 242, 254, 0.9)';
+        ctx.font = '600 11px Outfit, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${Math.round(currentAlt).toLocaleString()} m`, rocketX + 22, rocketY);
+
+        // Atmospheric Layer labels
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.fillText('10,000m · Troposphere Top', 10, 60);
+        ctx.fillText('5,000m · Cloud Layer', 10, groundY - maxFlightH * 0.5);
+        ctx.fillText('0m · Launchpad', 10, groundY - 6);
+
+        // Divider Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(dividerX, 0);
+        ctx.lineTo(dividerX, h);
+        ctx.stroke();
+
+        // ----------------------------------------------------
+        // RIGHT STAGE: FORCE VS ALTITUDE GRAPH F(x) & INTEGRAL
+        // ----------------------------------------------------
+        const graphMargin = { top: 40, right: 30, bottom: 45, left: dividerX + 65 };
+        const gw = w - graphMargin.left - graphMargin.right;
+        const gh = h - graphMargin.top - graphMargin.bottom;
+
+        if (gw <= 50 || gh <= 50) return;
+
+        // X scale: 0 to 10,000 m
+        const toScreenX = (x) => graphMargin.left + (x / 10000) * gw;
+        // Y scale: 0 to 22,000 N (22 kN)
+        const toScreenY = (f) => graphMargin.top + gh - (f / 22000) * gh;
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= 10000; x += 2500) {
+          const sx = toScreenX(x);
+          ctx.beginPath();
+          ctx.moveTo(sx, graphMargin.top);
+          ctx.lineTo(sx, graphMargin.top + gh);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${x / 1000}k`, sx, graphMargin.top + gh + 16);
+        }
+
+        for (let f = 0; f <= 20000; f += 5000) {
+          const sy = toScreenY(f);
+          ctx.beginPath();
+          ctx.moveTo(graphMargin.left, sy);
+          ctx.lineTo(graphMargin.left + gw, sy);
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${f / 1000} kN`, graphMargin.left - 8, sy + 3);
+        }
+
+        // Axes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(graphMargin.left, graphMargin.top);
+        ctx.lineTo(graphMargin.left, graphMargin.top + gh);
+        ctx.lineTo(graphMargin.left + gw, graphMargin.top + gh);
+        ctx.stroke();
+
+        // Axis Titles
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Altitude x (meters)', graphMargin.left + gw / 2, h - 10);
+        ctx.save();
+        ctx.translate(graphMargin.left - 45, graphMargin.top + gh / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Downward Force F(x) (Newtons)', 0, 0);
+        ctx.restore();
+
+        // 1. Shaded Area Under Curve up to currentAlt = Work Done
+        if (currentAlt > 0) {
+          const areaGrad = ctx.createLinearGradient(0, graphMargin.top, 0, graphMargin.top + gh);
+          areaGrad.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
+          areaGrad.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+
+          ctx.fillStyle = areaGrad;
+          ctx.beginPath();
+          ctx.moveTo(toScreenX(0), toScreenY(0));
+          ctx.lineTo(toScreenX(0), toScreenY(getForce(0)));
+
+          const step = Math.max(50, currentAlt / 100);
+          for (let x = 0; x <= currentAlt; x += step) {
+            ctx.lineTo(toScreenX(x), toScreenY(getForce(x)));
+          }
+          ctx.lineTo(toScreenX(currentAlt), toScreenY(getForce(currentAlt)));
+          ctx.lineTo(toScreenX(currentAlt), toScreenY(0));
+          ctx.closePath();
+          ctx.fill();
+
+          // Work Label in shaded region
+          if (currentAlt > 2500) {
+            const midX = currentAlt / 2;
+            const midY = getForce(midX) / 2;
+            ctx.fillStyle = '#34d399';
+            ctx.font = '600 12px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            const workMJ = (getWork(currentAlt) / 1000000).toFixed(1);
+            ctx.fillText(`Work = ∫ F(x) dx = ${workMJ} MJ`, toScreenX(midX), toScreenY(midY));
+          }
+        }
+
+        // 2. Full Force Function Curve F(x)
+        ctx.strokeStyle = '#00f2fe';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let x = 0; x <= 10000; x += 100) {
+          const sx = toScreenX(x);
+          const sy = toScreenY(getForce(x));
+          if (x === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        ctx.stroke();
+
+        // 3. Current Point on Curve
+        const curPx = toScreenX(currentAlt);
+        const curPy = toScreenY(getForce(currentAlt));
+
+        // Dropline to x axis
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(curPx, curPy);
+        ctx.lineTo(curPx, toScreenY(0));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Glow Point
+        ctx.fillStyle = '#00f2fe';
+        ctx.beginPath();
+        ctx.arc(curPx, curPy, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Tooltip above current point
+        ctx.fillStyle = 'rgba(11, 15, 25, 0.9)';
+        const tipW = 120;
+        const tipH = 26;
+        const tipX = Math.min(curPx - tipW / 2, w - tipW - 10);
+        ctx.fillRect(tipX, curPy - tipH - 10, tipW, tipH);
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tipX, curPy - tipH - 10, tipW, tipH);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '600 11px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`F = ${(getForce(currentAlt) / 1000).toFixed(2)} kN`, tipX + tipW / 2, curPy - 14);
+
+        // Update DOM Stats
+        statAlt.textContent = `${Math.round(currentAlt).toLocaleString()} m`;
+        statMass.textContent = isConstantMassMode ? '2,000 kg (Fixed)' : `${Math.round(Math.max(1000, 2000 - 0.1 * currentAlt)).toLocaleString()} kg`;
+        statForce.textContent = `${(getForce(currentAlt) / 1000).toFixed(2)} kN`;
+        statWork.textContent = `${(getWork(currentAlt) / 1000000).toFixed(2)} MJ`;
+      }
+
+      function stepLaunch() {
+        if (!isLaunching) return;
+
+        if (currentAlt < targetAlt) {
+          currentAlt = Math.min(targetAlt, currentAlt + 60);
+          draw();
+          animFrameId = requestAnimationFrame(stepLaunch);
+        } else {
+          isLaunching = false;
+          launchText.textContent = 'Launch Rocket';
+          launchIcon.textContent = '🚀';
+          btnLaunch.classList.remove('btn-active');
+          sound.playChime();
+          if (hud) hud.setStatus('Finished');
+        }
+      }
+
+      function toggleLaunch() {
+        if (isLaunching) {
+          isLaunching = false;
+          launchText.textContent = 'Resume Ascent';
+          launchIcon.textContent = '▶';
+          if (animFrameId) cancelAnimationFrame(animFrameId);
+          if (hud) hud.setStatus('Paused');
+        } else {
+          if (currentAlt >= targetAlt) {
+            currentAlt = 0;
+          }
+          isLaunching = true;
+          launchText.textContent = 'Pause Ascent';
+          launchIcon.textContent = '⏸';
+          sound.playDrawSweep(3.0);
+          if (hud) hud.setStatus('Running');
+          animFrameId = requestAnimationFrame(stepLaunch);
+        }
+      }
+
+      function resetLaunch() {
+        isLaunching = false;
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        currentAlt = 0;
+        launchText.textContent = 'Launch Rocket';
+        launchIcon.textContent = '🚀';
+        if (hud) hud.setStatus('Resetting');
+        setTimeout(() => { if (hud) hud.setStatus('Paused'); }, 400);
+        draw();
+      }
+
+      // Hook up UI
+      btnLaunch.addEventListener('click', toggleLaunch);
+      btnReset.addEventListener('click', resetLaunch);
+
+      altSlider.addEventListener('input', (e) => {
+        targetAlt = parseFloat(e.target.value);
+        currentAlt = targetAlt;
+        altSliderVal.textContent = `${targetAlt.toLocaleString()} m`;
+        if (isLaunching) {
+          isLaunching = false;
+          launchText.textContent = 'Launch Rocket';
+          launchIcon.textContent = '🚀';
+        }
+        draw();
+      });
+
+      // Presets
+      document.getElementById('btnPresetFull').addEventListener('click', () => {
+        isConstantMassMode = false;
+        targetAlt = 10000;
+        altSlider.value = 10000;
+        altSliderVal.textContent = '10,000 m';
+        resetLaunch();
+        toggleLaunch();
+      });
+
+      document.getElementById('btnPresetHalf').addEventListener('click', () => {
+        isConstantMassMode = false;
+        targetAlt = 5000;
+        altSlider.value = 5000;
+        altSliderVal.textContent = '5,000 m';
+        resetLaunch();
+        toggleLaunch();
+      });
+
+      document.getElementById('btnPresetConstant').addEventListener('click', () => {
+        isConstantMassMode = true;
+        targetAlt = 10000;
+        altSlider.value = 10000;
+        altSliderVal.textContent = '10,000 m';
+        resetLaunch();
+        toggleLaunch();
+      });
+
+      // Global keyboard shortcuts
+      setupSimulationShortcuts({
+        onToggleAnimation: toggleLaunch,
+        onReset: resetLaunch
+      });
+
+      // Initial run
+      resizeCanvas();
+      currentAlt = 10000; // show full curve initially
+      draw();
+    </script>
+  </body>
+</html>

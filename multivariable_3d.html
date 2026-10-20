@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Multivariable Calculus & Gradients | CalculusVerse</title>
+    <meta name="description" content="Explore 3D surfaces in WebGL: rotate saddles and ripples, inspect tangent planes, and track the steepest gradient vector." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+      #threeViewport {
+        width: 100%;
+        height: calc(100vh - 65px);
+        position: relative;
+        overflow: hidden;
+      }
+      #webglCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body style="overflow: hidden; height: 100vh;">
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/precalculus.html" class="nav-link">Precalculus</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation</a>
+        <a href="/integration.html" class="nav-link">Integration</a>
+        <a href="/multivariable_3d.html" class="nav-link active">3D Multivariable</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <!-- Full-Screen 3D Viewport -->
+    <div id="threeViewport">
+      <canvas id="webglCanvas"></canvas>
+
+      <!-- Minimal HUD Overlay in Top-Left (Non-occluding) -->
+      <div style="position: absolute; top: 16px; left: 20px; z-index: 10; pointer-events: none; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.85rem 1.25rem; max-width: 380px;">
+        <div class="clean-meta" style="margin-bottom: 0.25rem;">
+          <span>Module 04</span>
+          <span class="meta-dot">·</span>
+          <span>Three.js WebGL</span>
+        </div>
+        <h2 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+          3D Surface & Gradient Vector
+        </h2>
+        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+          Left-click drag to <strong>rotate</strong>. Right-click drag to <strong>pan</strong>. Scroll to <strong>zoom</strong>. Drag sliders below to position the probe $(x_0, y_0)$.
+        </p>
+
+        <!-- Live Math Readouts -->
+        <div style="margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.82rem; font-family: var(--font-mono);">
+          <div style="color: var(--neon-cyan);">Point: <span id="hudPoint">(0.80, 0.50, 0.39)</span></div>
+          <div style="color: var(--warm-gold);">Plane: <span id="hudPlane">z = 1.60x - 1.00y - 0.39</span></div>
+          <div style="color: var(--electric-blue);">Gradient: <span id="hudGrad">∇f = ⟨1.60, -1.00⟩</span></div>
+        </div>
+      </div>
+
+      <!-- Collapsible Bottom Dock (Consolidated Ergonomic Controls) -->
+      <div class="threejs-bottom-dock" id="bottomDock">
+        <button class="dock-collapse-btn" id="dockCollapseBtn">
+          <span>▾ Hide Controls</span>
+          <span class="kbd-hint">H</span>
+        </button>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; align-items: start;">
+          <!-- Column 1: Preset Surfaces -->
+          <div>
+            <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 600; display: block; margin-bottom: 0.4rem;">
+              Surface Preset
+            </label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem;">
+              <button class="segmented-btn active" data-surface="saddle">Saddle ($x^2 - y^2$)</button>
+              <button class="segmented-btn" data-surface="ripples">Ripples ($\sin r$)</button>
+              <button class="segmented-btn" data-surface="paraboloid">Paraboloid ($x^2 + y^2$)</button>
+              <button class="segmented-btn" data-surface="monkey">Monkey Saddle</button>
+            </div>
+          </div>
+
+          <!-- Column 2: Coordinate Sliders -->
+          <div>
+            <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 600; display: block; margin-bottom: 0.4rem;">
+              Probe Position $(x_0, y_0)$
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span class="slider-name">X Coordinate</span>
+                  <span class="slider-val" id="xSliderVal">0.80</span>
+                </div>
+                <input type="range" id="xSlider" min="-2.0" max="2.0" step="0.05" value="0.8" />
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span class="slider-name">Y Coordinate</span>
+                  <span class="slider-val" id="ySliderVal">0.50</span>
+                </div>
+                <input type="range" id="ySlider" min="-2.0" max="2.0" step="0.05" value="0.5" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Visual Elements Toggles -->
+          <div>
+            <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 600; display: block; margin-bottom: 0.4rem;">
+              Visual Overlays & Actions
+            </label>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+              <button class="segmented-btn active" id="togglePlaneBtn">🟨 Tangent Plane</button>
+              <button class="segmented-btn active" id="toggleGradBtn">🟦 Gradient Vector</button>
+              <button class="segmented-btn" id="toggleWireBtn">🕸 Wireframe</button>
+              <button class="segmented-btn" id="toggleRotateBtn">
+                <span>🔄 Auto-Rotate</span>
+                <span class="kbd-hint">Space</span>
+              </button>
+              <button class="segmented-btn" id="reset3dBtn">
+                <span>↺ Reset</span>
+                <span class="kbd-hint">R</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KaTeX and Three.js Scripts -->
+    <script type="module">
+      import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+      import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+      import { sound, setupSimulationShortcuts } from '/main.js';
+
+      const canvas = document.getElementById('webglCanvas');
+      const container = document.getElementById('threeViewport');
+
+      // 1. Three.js Scene Setup
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x070a12);
+      scene.fog = new THREE.FogExp2(0x070a12, 0.035);
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(6, 7, 9);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 + 0.1; // prevent camera going too far below floor
+
+      // 2. Lighting Setup (Warm Key + Cool Fill)
+      const keyLight = new THREE.DirectionalLight(0xfff3e0, 2.2);
+      keyLight.position.set(8, 14, 6);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      scene.add(keyLight);
+
+      const hemiLight = new THREE.HemisphereLight(0x00f2fe, 0x111827, 1.2);
+      scene.add(hemiLight);
+
+      const blueBackLight = new THREE.DirectionalLight(0x4facfe, 1.0);
+      blueBackLight.position.set(-6, -2, -6);
+      scene.add(blueBackLight);
+
+      // Floor grid
+      const gridHelper = new THREE.GridHelper(14, 28, 0x00f2fe, 0x1e293b);
+      gridHelper.position.y = -2.5;
+      scene.add(gridHelper);
+
+      // 3. State & Mathematical Surface Functions
+      let surfaceType = 'saddle'; // 'saddle', 'ripples', 'paraboloid', 'monkey'
+      let probeX = 0.8;
+      let probeY = 0.5;
+
+      let showPlane = true;
+      let showGrad = true;
+      let showWire = false;
+      let autoRotate = false;
+
+      function evalSurface(x, y) {
+        if (surfaceType === 'saddle') {
+          // z = 0.5 * (x^2 - y^2)
+          return 0.5 * (x * x - y * y);
+        } else if (surfaceType === 'ripples') {
+          // z = 1.2 * sin(sqrt(x^2 + y^2) * 2)
+          const r = Math.sqrt(x * x + y * y);
+          return 1.1 * Math.sin(r * 2.2);
+        } else if (surfaceType === 'paraboloid') {
+          // z = 0.35 * (x^2 + y^2) - 1.2
+          return 0.35 * (x * x + y * y) - 1.2;
+        } else if (surfaceType === 'monkey') {
+          // z = 0.2 * (x^3 - 3*x*y^2)
+          return 0.18 * (x * x * x - 3 * x * y * y);
+        }
+        return 0;
+      }
+
+      function evalPartialX(x, y, eps = 0.001) {
+        return (evalSurface(x + eps, y) - evalSurface(x - eps, y)) / (2 * eps);
+      }
+      function evalPartialY(x, y, eps = 0.001) {
+        return (evalSurface(x, y + eps) - evalSurface(x, y - eps)) / (2 * eps);
+      }
+
+      // 4. Create Parametric 3D Surface Mesh
+      const GRID_RES = 60;
+      const DOMAIN = 2.8;
+      const surfaceGeometry = new THREE.BufferGeometry();
+
+      function updateSurfaceGeometry() {
+        const positions = [];
+        const colors = [];
+        const indices = [];
+
+        const colorTop = new THREE.Color(0x00f2fe); // Cyan
+        const colorMid = new THREE.Color(0x9d4edd); // Purple
+        const colorLow = new THREE.Color(0x1e1b4b); // Dark Indigo
+
+        for (let i = 0; i <= GRID_RES; i++) {
+          const u = (i / GRID_RES) * 2 * DOMAIN - DOMAIN;
+          for (let j = 0; j <= GRID_RES; j++) {
+            const v = (j / GRID_RES) * 2 * DOMAIN - DOMAIN;
+            const z = evalSurface(u, v);
+
+            // Three.js coords: X=u, Y=z, Z=v
+            positions.push(u, z, v);
+
+            // Color gradient mapped to altitude z [-2, 2]
+            const normZ = Math.max(0, Math.min(1, (z - (-1.8)) / (1.8 - (-1.8))));
+            const vertexColor = new THREE.Color();
+            if (normZ > 0.5) {
+              vertexColor.lerpColors(colorMid, colorTop, (normZ - 0.5) * 2);
+            } else {
+              vertexColor.lerpColors(colorLow, colorMid, normZ * 2);
+            }
+            colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
+          }
+        }
+
+        for (let i = 0; i < GRID_RES; i++) {
+          for (let j = 0; j < GRID_RES; j++) {
+            const a = i * (GRID_RES + 1) + j;
+            const b = (i + 1) * (GRID_RES + 1) + j;
+            const c = (i + 1) * (GRID_RES + 1) + (j + 1);
+            const d = i * (GRID_RES + 1) + (j + 1);
+
+            indices.push(a, b, d);
+            indices.push(b, c, d);
+          }
+        }
+
+        surfaceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        surfaceGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        surfaceGeometry.setIndex(indices);
+        surfaceGeometry.computeVertexNormals();
+      }
+
+      updateSurfaceGeometry();
+
+      const surfaceMaterial = new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.35,
+        metalness: 0.15,
+        side: THREE.DoubleSide,
+        wireframe: showWire
+      });
+
+      const surfaceMesh = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+      surfaceMesh.castShadow = true;
+      surfaceMesh.receiveShadow = true;
+      scene.add(surfaceMesh);
+
+      // 5. Probe Point Sphere
+      const probeGeo = new THREE.SphereGeometry(0.12, 24, 24);
+      const probeMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0x00f2fe,
+        emissiveIntensity: 0.8,
+        roughness: 0.2
+      });
+      const probeSphere = new THREE.Mesh(probeGeo, probeMat);
+      scene.add(probeSphere);
+
+      // 6. Tangent Plane Mesh
+      const planeGeo = new THREE.PlaneGeometry(2.4, 2.4, 10, 10);
+      const planeMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.55,
+        roughness: 0.2,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+        wireframe: false
+      });
+      const tangentPlaneMesh = new THREE.Mesh(planeGeo, planeMat);
+      scene.add(tangentPlaneMesh);
+
+      // 7. Gradient Vector Arrow
+      // ArrowHelper: dir, origin, length, color, headLength, headWidth
+      const gradArrow = new THREE.ArrowHelper(
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(0, 0, 0),
+        1.5,
+        0x00f2fe,
+        0.35,
+        0.2
+      );
+      scene.add(gradArrow);
+
+      // 8. Update Probe, Plane, and Gradient positions
+      function updateProbeAndVisuals() {
+        const x = probeX;
+        const y = probeY;
+        const z = evalSurface(x, y);
+
+        const fx = evalPartialX(x, y);
+        const fy = evalPartialY(x, y);
+
+        // Update probe sphere (X=x, Y=z, Z=y)
+        probeSphere.position.set(x, z, y);
+
+        // Tangent Plane equation: Z_surface - z = fx*(X_surface - x) + fy*(Y_surface - y)
+        // Normal vector to surface: N = <-fx, 1, -fy> in surface math (where z is up)
+        // In Three.js coords (X=x, Y=z, Z=y):
+        // Normal in Three.js is: Vector3(-fx, 1, -fy)
+        const normal = new THREE.Vector3(-fx, 1, -fy).normalize();
+
+        tangentPlaneMesh.position.set(x, z, y);
+        // Align plane mesh (which originally has normal (0, 0, 1)) to point along 'normal'
+        const defaultPlaneNormal = new THREE.Vector3(0, 0, 1);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(defaultPlaneNormal, normal);
+        tangentPlaneMesh.setRotationFromQuaternion(quaternion);
+
+        tangentPlaneMesh.visible = showPlane;
+
+        // Gradient vector arrow:
+        // Gradient in xy plane is <fx, fy>.
+        // When projected on the surface in the direction of steepest ascent:
+        // In 3D: vector is <fx, fx^2 + fy^2, fy>
+        const gradDir = new THREE.Vector3(fx, fx * fx + fy * fy, fy);
+        const gradMag = Math.sqrt(fx * fx + fy * fy);
+        if (gradMag > 0.001) {
+          gradDir.normalize();
+          gradArrow.setDirection(gradDir);
+          const arrowLen = Math.max(0.6, Math.min(2.5, gradMag * 0.9));
+          gradArrow.setLength(arrowLen, 0.3, 0.15);
+          gradArrow.position.set(x, z + 0.05, y);
+          gradArrow.visible = showGrad;
+        } else {
+          gradArrow.visible = false;
+        }
+
+        // Update HUD text
+        document.getElementById('hudPoint').textContent = `(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`;
+        document.getElementById('hudPlane').textContent = `z = ${fx.toFixed(2)}x ${fy >= 0 ? '+' : ''}${fy.toFixed(2)}y + ${(z - fx*x - fy*y).toFixed(2)}`;
+        document.getElementById('hudGrad').textContent = `∇f = ⟨${fx.toFixed(2)}, ${fy.toFixed(2)}⟩ (|∇f| = ${gradMag.toFixed(2)})`;
+      }
+
+      updateProbeAndVisuals();
+
+      // UI Listeners
+      const xSlider = document.getElementById('xSlider');
+      const ySlider = document.getElementById('ySlider');
+      const xSliderVal = document.getElementById('xSliderVal');
+      const ySliderVal = document.getElementById('ySliderVal');
+
+      xSlider.addEventListener('input', (e) => {
+        probeX = parseFloat(e.target.value);
+        xSliderVal.textContent = probeX.toFixed(2);
+        updateProbeAndVisuals();
+      });
+
+      ySlider.addEventListener('input', (e) => {
+        probeY = parseFloat(e.target.value);
+        ySliderVal.textContent = probeY.toFixed(2);
+        updateProbeAndVisuals();
+      });
+
+      // Surface Presets
+      const surfaceButtons = document.querySelectorAll('[data-surface]');
+      surfaceButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          surfaceButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          surfaceType = btn.getAttribute('data-surface');
+          updateSurfaceGeometry();
+          surfaceGeometry.attributes.position.needsUpdate = true;
+          surfaceGeometry.attributes.color.needsUpdate = true;
+          surfaceGeometry.computeVertexNormals();
+
+          updateProbeAndVisuals();
+          sound.playChime();
+        });
+      });
+
+      // Overlay toggles
+      const togglePlaneBtn = document.getElementById('togglePlaneBtn');
+      const toggleGradBtn = document.getElementById('toggleGradBtn');
+      const toggleWireBtn = document.getElementById('toggleWireBtn');
+      const toggleRotateBtn = document.getElementById('toggleRotateBtn');
+
+      togglePlaneBtn.addEventListener('click', () => {
+        showPlane = !showPlane;
+        togglePlaneBtn.classList.toggle('active', showPlane);
+        tangentPlaneMesh.visible = showPlane;
+      });
+
+      toggleGradBtn.addEventListener('click', () => {
+        showGrad = !showGrad;
+        toggleGradBtn.classList.toggle('active', showGrad);
+        gradArrow.visible = showGrad;
+      });
+
+      toggleWireBtn.addEventListener('click', () => {
+        showWire = !showWire;
+        toggleWireBtn.classList.toggle('active', showWire);
+        surfaceMaterial.wireframe = showWire;
+      });
+
+      toggleRotateBtn.addEventListener('click', () => {
+        autoRotate = !autoRotate;
+        toggleRotateBtn.classList.toggle('active', autoRotate);
+      });
+
+      const reset3dBtn = document.getElementById('reset3dBtn');
+      function reset3DScene() {
+        probeX = 0.8;
+        probeY = 0.5;
+        xSlider.value = 0.8;
+        ySlider.value = 0.5;
+        xSliderVal.textContent = '0.80';
+        ySliderVal.textContent = '0.50';
+
+        camera.position.set(6, 7, 9);
+        controls.target.set(0, 0, 0);
+        controls.update();
+        scene.rotation.set(0, 0, 0);
+        autoRotate = false;
+        toggleRotateBtn.classList.remove('active');
+
+        updateProbeAndVisuals();
+        sound.playChime();
+      }
+
+      reset3dBtn.addEventListener('click', reset3DScene);
+
+      // Global keyboard shortcuts (Space: Toggle Rotate, R: Reset View & Probe)
+      setupSimulationShortcuts({
+        onToggleAnimation: () => {
+          toggleRotateBtn.click();
+        },
+        onReset: () => {
+          reset3DScene();
+        }
+      });
+
+      // Bottom dock collapse/expand
+      const bottomDock = document.getElementById('bottomDock');
+      const dockCollapseBtn = document.getElementById('dockCollapseBtn');
+      let isDockCollapsed = false;
+
+      dockCollapseBtn.addEventListener('click', () => {
+        isDockCollapsed = !isDockCollapsed;
+        bottomDock.classList.toggle('collapsed', isDockCollapsed);
+        dockCollapseBtn.textContent = isDockCollapsed ? '▴ Show Controls' : '▾ Hide Controls';
+      });
+
+      // Keyboard shortcut 'H' for collapsing dock
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'h' || e.key === 'H') {
+          dockCollapseBtn.click();
+        }
+      });
+
+      // Resize handler
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      // Animation Render Loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        if (autoRotate) {
+          scene.rotation.y += 0.005;
+        }
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

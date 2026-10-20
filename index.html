@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CalculusVerse: Experience Math in Motion</title>
+    <meta name="description" content="The easiest, most visual, and most intuitive way for 10th graders to master Calculus. Interactive graphs, real-world physics, Riemann sums, and 3D surfaces." />
+    <meta property="og:title" content="CalculusVerse: Experience Math in Motion" />
+    <meta property="og:description" content="The easiest, most visual, and most intuitive way for 10th graders to master Calculus." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <!-- Background Canvas Grid -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="#examples-section" class="nav-link">Real-World Labs (7)</a>
+        <a href="/precalculus.html" class="nav-link">Precalculus</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation</a>
+        <a href="/integration.html" class="nav-link">Integration</a>
+        <a href="/multivariable_3d.html" class="nav-link">3D Multivariable</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle" title="Toggle interactive sound effects">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="page-container">
+      <!-- Hero Section -->
+      <section style="text-align: center; padding: 3rem 1rem 2.5rem; max-width: 900px; margin: 0 auto;">
+        <div class="clean-meta" style="justify-content: center; margin-bottom: 1.25rem;">
+          <span>High School Grade 10</span>
+          <span class="meta-dot">·</span>
+          <span>Intuitive Visual Mathematics</span>
+          <span class="meta-dot">·</span>
+          <span>Zero Formulas Memorization Required</span>
+        </div>
+
+        <h1 class="hero-title">
+          Calculus<span style="background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Verse</span>: Experience Math in Motion
+        </h1>
+
+        <p class="hero-subtitle">
+          The easiest, most visual, and most intuitive way for 10th graders to master Calculus. Watch curves develop smoothly in real-time, see physical cars race against tangent slopes, and interact with 3D surfaces.
+        </p>
+
+        <!-- CTA Button Group -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 3.5rem;">
+          <a href="/toc.html" class="btn-primary" style="font-size: 1.05rem; padding: 0.9rem 2.2rem;">
+            <span>Start Learning Calculus</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="#examples-section" class="btn-secondary" style="border-color: rgba(0, 242, 254, 0.4); color: var(--neon-cyan);">
+            <span>Explore Real-Life Applications (7)</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </a>
+          <a href="/differentiation.html" class="btn-secondary">
+            <span>Explore Tangents & Car Simulator</span>
+          </a>
+        </div>
+
+        <!-- AUTHOR DETAILS SECTION (Positioned DIRECTLY below the CTA Button) -->
+        <div class="author-card" style="text-align: left; max-width: 820px; margin: 0 auto;">
+          <div class="author-header">
+            <div class="author-avatar" title="Author Md Ikramul Hoque Arik">
+              <img src="/assets/aistudio/profile-smiling_b2788843.webp" 
+                   alt="Md Ikramul Hoque Arik - Gachbaria Govt College" 
+                   loading="eager" 
+                   referrerPolicy="no-referrer" />
+            </div>
+            <div>
+              <div class="author-name">Md Ikramul Hoque Arik</div>
+              <div class="author-college">Gachbaria Govt College</div>
+              <div class="clean-meta" style="margin-top: 0.25rem;">
+                <span>Author & Educational Designer</span>
+                <span class="meta-dot">·</span>
+                <span>Mathematics Pedagogy</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="author-quote">
+            "If this software truly helps you understand calculus, you don't need to send me money—just send a thank-you note or a motivational message! And if you don't like it, feel free to send some constructive criticism (or even a little tough love!) on WhatsApp."
+          </div>
+
+          <div class="author-links-row">
+            <!-- WhatsApp direct link -->
+            <a href="https://wa.me/8801572936762?text=Hi%20Arik,%20I%20am%20using%20CalculusVerse%20and%20wanted%20to%20share%20my%20feedback:" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="btn-primary btn-whatsapp" 
+               title="Message on WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.974.53 1.815.82 2.791.82 3.185 0 5.77-2.586 5.77-5.766.001-3.182-2.585-5.806-5.77-5.806zm4.195 7.828c-.173.486-.877.945-1.229.986-.352.041-.815.067-2.348-.567-1.838-.76-3.033-2.617-3.125-2.739-.092-.122-.743-.989-.743-1.887 0-.898.472-1.34.64-1.523.168-.183.367-.229.49-.229.122 0 .245.001.352.006.113.005.263-.043.411.314.153.367.52 1.27.566 1.362.046.092.076.199.015.321-.061.122-.092.199-.184.306-.092.107-.193.239-.276.321-.092.092-.188.192-.081.376.107.184.475.784 1.021 1.27.702.625 1.294.819 1.477.911.183.092.291.077.398-.046.107-.123.46-.536.582-.72.122-.184.245-.153.413-.092.168.061 1.069.505 1.253.597.183.092.306.138.352.214.046.076.046.444-.127.93z"/>
+              </svg>
+              <span>WhatsApp Direct Feedback (+8801572936762)</span>
+            </a>
+
+            <!-- Email link -->
+            <a href="mailto:mdikramulhoquearik@gmail.com?subject=CalculusVerse%20Feedback" 
+               class="btn-secondary" 
+               title="Send Email">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <span>mdikramulhoquearik@gmail.com</span>
+            </a>
+
+            <!-- Portfolio link -->
+            <a href="https://IkramulHoque-Arik.github.io" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="btn-secondary" 
+               title="Author Portfolio">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span>Portfolio (IkramulHoque-Arik.github.io)</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why CalculusVerse Is Different: Visual Pillars -->
+      <section style="margin-top: 3.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2 class="section-title">Why 10th Graders Love CalculusVerse</h2>
+          <p class="section-lead">Say goodbye to dry textbooks. Learn by driving, sliding, and rotating concepts.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.5rem;">
+          <div class="glass-panel">
+            <div style="font-size: 2rem; margin-bottom: 0.75rem;">⏳</div>
+            <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--neon-cyan);">3-Second Curve Growth</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">
+              Graphs never pop up instantly. Watch curves trace themselves over 3 seconds so you intuitively see how changing inputs dynamically shape outputs.
+            </p>
+          </div>
+
+          <div class="glass-panel">
+            <div style="font-size: 2rem; margin-bottom: 0.75rem;">🚗</div>
+            <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--vibrant-purple);">Real Car Physics</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">
+              Distance is $s(t)$, and the tangent slope is the car's speedometer reading $v(t)$. See the car speed up, slow down, and reverse live on track.
+            </p>
+          </div>
+
+          <div class="glass-panel">
+            <div style="font-size: 2rem; margin-bottom: 0.75rem;">📐</div>
+            <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--emerald-green);">Riemann Sum Slices</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">
+              Pack rectangles under the curve from $n=1$ to $50$ slices. Watch discrete blocks seamlessly merge into the exact smooth integral area.
+            </p>
+          </div>
+
+          <div class="glass-panel">
+            <div style="font-size: 2rem; margin-bottom: 0.75rem;">🌐</div>
+            <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--warm-gold);">3D Mountain Surfaces</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">
+              Rotate hyperbolic saddles and ripples in WebGL 3D. Inspect tangent planes and follow the gradient vector pointing up the steepest slope.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- REAL-WORLD CALCULUS APPLICATIONS & CASE STUDIES -->
+      <section id="examples-section" style="margin-top: 4.5rem; scroll-margin-top: 5rem;">
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+          <div class="clean-meta" style="justify-content: center; margin-bottom: 0.75rem;">
+            <span>Real-World Labs</span>
+            <span class="meta-dot">·</span>
+            <span>7 Interactive Case Studies</span>
+            <span class="meta-dot">·</span>
+            <span>Step-by-Step Mathematical Solutions</span>
+          </div>
+          <h2 class="section-title" style="font-size: clamp(1.8rem, 3.5vw, 2.5rem);">
+            Real-Life Calculus Applications Lab
+          </h2>
+          <p class="section-lead" style="max-width: 760px; margin: 0 auto;">
+            See why calculus was actually invented! Explore real-world challenges across automotive physics, spaceflight, packaging engineering, lunar astrophysics, and economic optimization.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          <!-- 1. Instantaneous Velocity -->
+          <a href="/example_velocity.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--neon-cyan);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--neon-cyan); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 01 · KINEMATICS</span>
+                <span style="font-size: 1.4rem;">🚗</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Instantaneous Velocity: The Speedometer Secret
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                Why average speed isn't enough on the highway. Discover how the derivative $\frac{ds}{dt}$ captures the car's exact speedometer reading at frozen instants.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Position & Velocity Formula</div>
+                <div style="font-size: 0.95rem; color: var(--neon-cyan); font-weight: bold;">
+                  $$s(t) = 2t^2 + 4t \implies v(t) = \frac{ds}{dt} = 4t + 4$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--neon-cyan); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Velocity Simulator</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 2. Maximizing Box Volume -->
+          <a href="/example_box_optimization.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--vibrant-purple);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--vibrant-purple); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 02 · PACKAGING</span>
+                <span style="font-size: 1.4rem;">📦</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Maximizing Box Volume: Corner Optimization
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                Packaging engineers must hold maximum cargo while cutting minimum cardboard. Cut square corners $x$ from a $20 \times 12\text{ cm}$ sheet and find the exact peak volume.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Volume Function & Derivative</div>
+                <div style="font-size: 0.95rem; color: var(--vibrant-purple); font-weight: bold;">
+                  $$V(x) = x(20-2x)(12-2x) \implies V'(x) = 0 \text{ at } x \approx 2.43\text{ cm}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--vibrant-purple); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch 3D Box Simulator</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 3. Total Distance from Speed -->
+          <a href="/example_distance_speed.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--emerald-green);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--emerald-green); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 03 · TRANSIT PHYSICS</span>
+                <span style="font-size: 1.4rem;">🚅</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Total Distance from Speed: Accumulation
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                When train velocity fluctuates constantly, $d = v \times t$ gives wrong results. Learn how definite integrals accumulate the exact continuous area under the velocity curve.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Definite Integral Formula</div>
+                <div style="font-size: 0.95rem; color: var(--emerald-green); font-weight: bold;">
+                  $$\text{Dist} = \int_{0}^{4} (-15t^2 + 60t + 80)\,dt = 480\text{ km}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--emerald-green); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Train Rail Simulator</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 4. Work Done by Variable Force -->
+          <a href="/example_rocket_work.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--neon-cyan);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--neon-cyan); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 04 · AEROSPACE</span>
+                <span style="font-size: 1.4rem;">🚀</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Work Done by Variable Force: Rocket Ascent
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                A $2,000\text{ kg}$ rocket sheds mass as it burns fuel: $m(x) = 2000 - 0.1x$. Compute the exact work in Joules to reach an altitude of $10,000\text{ m}$.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Variable Work Integral</div>
+                <div style="font-size: 0.95rem; color: var(--neon-cyan); font-weight: bold;">
+                  $$W = \int_{0}^{10000} 9.8(2000 - 0.1x)\,dx = 147\text{ MJ}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--neon-cyan); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Rocket Gantry Lab</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 5. Escape Velocity & Related Rates -->
+          <a href="/example_escape_velocity.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--vibrant-purple);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--vibrant-purple); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 05 · ASTROPHYSICS</span>
+                <span style="font-size: 1.4rem;">🪐</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Escape Velocity & Related Rates: Freefall
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                A tool dropped from a hovering lunar capsule at $2,000\text{ km}$ falls under $v = \sqrt{2GM/r}$. Use the Chain Rule $\frac{dv}{dt} = \frac{dv}{dr} \frac{dr}{dt}$ to find acceleration at $1,500\text{ km}$.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Chain Rule Acceleration</div>
+                <div style="font-size: 0.95rem; color: var(--vibrant-purple); font-weight: bold;">
+                  $$a = \frac{dv}{dr} \cdot \frac{dr}{dt} = \frac{GM}{r^2} \approx 1.78\text{ m/s}^2$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--vibrant-purple); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Freefall Orbital Lab</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 6. Marginal Cost & Revenue: Maximizing Profit -->
+          <a href="/example_profit_optimization.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--warm-gold);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--warm-gold); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 06 · ECONOMICS</span>
+                <span style="font-size: 1.4rem;">📱</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Marginal Analysis: Maximizing Smartphone Profit
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                Why factory overproduction kills profit. See how parallel tangent slopes $(MR = MC)$ determine the exact optimal volume of $250,000$ smartphones for $\$1.24\text{M}$ peak profit.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Marginal Rule: MR = MC</div>
+                <div style="font-size: 0.95rem; color: var(--warm-gold); font-weight: bold;">
+                  $$12 - 0.04x = 2 \implies x = 250\text{k units} \implies \text{Profit} = \$1.24\text{M}$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--warm-gold); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Factory Profit Lab</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+
+          <!-- 7. Consumer Surplus -->
+          <a href="/example_consumer_surplus.html" class="glass-panel" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 3px solid var(--emerald-green);">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--emerald-green); letter-spacing: 0.05em; font-weight: 600;">APPLICATION 07 · MARKET SURPLUS</span>
+                <span style="font-size: 1.4rem;">🚕</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+                Consumer Surplus: Rideshare Pricing Secret
+              </h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                Demand price is $p(x) = 40 - 0.05x$ with equilibrium fare at $\$15$. Calculate the $\$6.25\text{ Million}$ total consumer savings using definite integration.
+              </p>
+              <div class="math-display-card" style="margin-bottom: 1rem; padding: 0.6rem 0.8rem;">
+                <div class="math-title">Consumer Surplus Integral</div>
+                <div style="font-size: 0.95rem; color: var(--emerald-green); font-weight: bold;">
+                  $$CS = \int_{0}^{500} (25 - 0.05x)\,dx = \$6,250,000$$
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--emerald-green); font-weight: 600; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span>Launch Rideshare Surplus Lab</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Ready to Begin CTA Banner -->
+      <section style="margin-top: 4rem; text-align: center; padding: 2.5rem; background: rgba(0, 242, 254, 0.03); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 16px;">
+        <h2 style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin-bottom: 0.75rem;">
+          Ready to conquer calculus without fear?
+        </h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Follow the step-by-step curriculum map designed specifically for beginner students and 10th-grade classrooms.
+        </p>
+        <a href="/toc.html" class="btn-primary" style="font-size: 1rem; padding: 0.85rem 2rem;">
+          <span>Open Interactive Curriculum Map</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Designed & Developed by Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="https://IkramulHoque-Arik.github.io" target="_blank" style="color: var(--text-muted); text-decoration: none;">Portfolio</a>
+        <a href="/toc.html" style="color: var(--text-muted); text-decoration: none;">Curriculum</a>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

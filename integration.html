@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integral Calculus & Riemann Sums | CalculusVerse</title>
+    <meta name="description" content="Discover integral calculus intuitively: 3-second animated curves, Left/Right/Midpoint/Trapezoidal Riemann sums, and convergence to the exact definite integral." />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- KaTeX CDN & Auto-render extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-glyph">∫</span>
+        <span>Calculus<span class="accent">Verse</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/toc.html" class="nav-link">Curriculum Map</a>
+        <a href="/precalculus.html" class="nav-link">Precalculus</a>
+        <a href="/differentiation.html" class="nav-link">Differentiation</a>
+        <a href="/integration.html" class="nav-link active">Integration</a>
+        <a href="/multivariable_3d.html" class="nav-link">3D Multivariable</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle-btn sound-on" id="soundToggle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Sound: ON
+        </button>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <!-- Section Header -->
+      <div style="margin-bottom: 1.75rem;">
+        <div class="clean-meta" style="margin-bottom: 0.5rem;">
+          <span>Module 03</span>
+          <span class="meta-dot">·</span>
+          <span>Integral Calculus</span>
+          <span class="meta-dot">·</span>
+          <span>Accumulation of Slices</span>
+        </div>
+        <h1 class="hero-title" style="font-size: clamp(2rem, 3.5vw, 2.8rem);">
+          Riemann Sums & Area Approximation
+        </h1>
+        <p class="section-lead" style="max-width: 820px;">
+          How do you calculate the exact area of an irregular, curved shape? You slice it into simple rectangles! Watch how increasing the partition count $n$ collapses the error until the rectangles become the exact integral $\int_a^b f(x)\,dx$.
+        </p>
+      </div>
+
+      <!-- Presets & Custom Formula Toolbar -->
+      <div class="glass-panel" style="padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Presets:</span>
+          <button class="segmented-btn active" data-preset="parabola">Parabolic Hill ($4 - x^2$)</button>
+          <button class="segmented-btn" data-preset="sine">Sine Wave ($\sin(x) + 1.8$)</button>
+          <button class="segmented-btn" data-preset="quartic">Canyon Peaks ($0.1x^4 - x^2 + 3$)</button>
+          <button class="segmented-btn" data-preset="linear">Linear Ramp ($0.6x + 2$)</button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 380px;">
+          <div class="formula-input-wrap" style="flex: 1;">
+            <span class="formula-prefix">f(x) = </span>
+            <input type="text" id="customFormulaInput" class="formula-input" value="4 - x^2" placeholder="e.g. 3 - 0.2*x^2" />
+          </div>
+          <button id="applyFormulaBtn" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <span>3s Draw</span>
+            <span class="kbd-hint">Space</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Workbench Layout -->
+      <div class="workbench-layout">
+        <!-- Interactive Stage: Canvas -->
+        <div class="glass-panel" style="padding: 1.25rem;">
+          <div class="canvas-card" style="height: 520px; position: relative;">
+            <canvas id="integralCanvas"></canvas>
+
+            <!-- 3-Second Progressive Draw Indicator -->
+            <div class="draw-indicator" id="drawIndicator">
+              <div class="draw-spinner"></div>
+              <span>Progressive 3s Trace...</span>
+            </div>
+
+            <!-- In-Canvas Accuracy Tag -->
+            <div style="position: absolute; top: 12px; left: 16px; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); padding: 0.4rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 0.65rem;">
+              <span style="font-size: 0.82rem; color: var(--text-muted);">Current Accuracy:</span>
+              <span id="canvasAccuracy" style="font-family: var(--font-mono); font-weight: 700; color: var(--emerald-green); font-size: 0.95rem;">98.4%</span>
+            </div>
+          </div>
+
+          <!-- Stage Bottom Legend -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; font-size: 0.85rem;">
+            <div style="display: flex; align-items: center; gap: 1.25rem;">
+              <span style="display: flex; align-items: center; gap: 0.35rem;">
+                <span style="width: 12px; height: 3px; background: var(--neon-cyan); border-radius: 2px;"></span>
+                <span>Curve $f(x)$</span>
+              </span>
+              <span style="display: flex; align-items: center; gap: 0.35rem;">
+                <span style="width: 12px; height: 10px; background: rgba(16, 185, 129, 0.35); border: 1px solid var(--emerald-green); border-radius: 2px;"></span>
+                <span>Riemann Rectangles ($n$ slices)</span>
+              </span>
+              <span style="display: flex; align-items: center; gap: 0.35rem;">
+                <span style="width: 12px; height: 3px; background: var(--warm-gold); border-radius: 2px;"></span>
+                <span>Bounds $[a, b]$</span>
+              </span>
+            </div>
+
+            <button class="btn-secondary" id="resetIntegrationBtn" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+              <span>Reset to Defaults</span>
+              <span class="kbd-hint">R</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Control Deck -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <!-- Riemann Method Selector -->
+          <div class="glass-panel">
+            <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+              Riemann Approximation Method
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.25rem;">
+              <button class="segmented-btn active" data-method="midpoint">Midpoint Sum</button>
+              <button class="segmented-btn" data-method="trapezoid">Trapezoidal Rule</button>
+              <button class="segmented-btn" data-method="left">Left Sum</button>
+              <button class="segmented-btn" data-method="right">Right Sum</button>
+            </div>
+
+            <!-- Number of Partitions Slider (n = 1 to 50) -->
+            <div class="slider-group" style="margin-bottom: 1rem;">
+              <div class="slider-label-row">
+                <span class="slider-name">Partitions ($n$ slices)</span>
+                <span class="slider-val" id="nSliderVal" style="color: var(--emerald-green); font-size: 1.1rem;">n = 12</span>
+              </div>
+              <input type="range" id="nSlider" min="1" max="50" step="1" value="12" />
+              <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">
+                Slide $n \to 50$ to see rectangles seamlessly fuse into the exact curve!
+              </div>
+            </div>
+
+            <!-- Bounds Sliders -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.5rem;">
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span class="slider-name">Lower Bound ($a$)</span>
+                  <span class="slider-val" id="boundAVal">-1.80</span>
+                </div>
+                <input type="range" id="boundASlider" min="-3.5" max="0.5" step="0.1" value="-1.8" />
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span class="slider-name">Upper Bound ($b$)</span>
+                  <span class="slider-val" id="boundBVal">1.80</span>
+                </div>
+                <input type="range" id="boundBSlider" min="0.5" max="3.5" step="0.1" value="1.8" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Area Comparison Readout -->
+          <div class="glass-panel">
+            <h3 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.85rem; color: var(--text-main);">
+              Definite Integral Comparison
+            </h3>
+
+            <div class="math-display-card" style="margin-bottom: 0.75rem;">
+              <div class="math-title">Riemann Sum Total (Approximation)</div>
+              <div id="riemannSumMath" style="font-size: 1.25rem; font-family: var(--font-mono); color: var(--emerald-green); font-weight: 700; margin-top: 0.2rem;">
+                $\sum = 10.468$
+              </div>
+            </div>
+
+            <div class="math-display-card" style="margin-bottom: 0.75rem;">
+              <div class="math-title">Exact Definite Integral $\int_a^b f(x)\,dx$</div>
+              <div id="exactIntegralMath" style="font-size: 1.1rem; font-family: var(--font-mono); color: var(--neon-cyan); margin-top: 0.2rem;">
+                $\int_{-1.8}^{1.8} (4 - x^2)\,dx = 10.512$
+              </div>
+            </div>
+
+            <div class="math-display-card">
+              <div class="math-title">Approximation Error</div>
+              <div id="errorMath" style="font-size: 0.95rem; font-family: var(--font-mono); color: var(--warm-gold); margin-top: 0.2rem;">
+                $\text{Error} = 0.42\%$
+              </div>
+            </div>
+          </div>
+
+          <!-- Educational Takeaway for 10th Graders -->
+          <div class="glass-panel">
+            <h4 style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--emerald-green); margin-bottom: 0.4rem;">
+              Why Calculus Works
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55;">
+              Notice how at $n=2$, the staircase rectangles leave huge empty gaps or stick out above the curve. But when $n=40$, the width of each slice $\Delta x = \frac{b-a}{n}$ becomes microscopic, leaving practically zero gap! That is the Fundamental Theorem of Calculus.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-World Applications Links for Integration -->
+      <section style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-main);">
+              Explore Real-World Integral Calculus Applications
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Hands-on interactive simulations applying area accumulation and definite integrals</p>
+          </div>
+          <a href="/index.html#examples-section" style="color: var(--emerald-green); font-size: 0.85rem; text-decoration: none; font-weight: 600;">View All 7 Applications →</a>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <a href="/example_distance_speed.html" class="glass-panel" style="text-decoration: none; padding: 1rem; border-left: 3px solid var(--emerald-green);">
+            <div style="font-size: 0.72rem; color: var(--emerald-green); font-family: var(--font-mono); font-weight: 600;">APP 03 · TRANSIT PHYSICS</div>
+            <div style="font-weight: 700; color: var(--text-main); margin: 0.25rem 0;">🚅 Total Distance from Speed</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Bullet train odometer via definite integral area</div>
+          </a>
+          <a href="/example_rocket_work.html" class="glass-panel" style="text-decoration: none; padding: 1rem; border-left: 3px solid var(--neon-cyan);">
+            <div style="font-size: 0.72rem; color: var(--neon-cyan); font-family: var(--font-mono); font-weight: 600;">APP 04 · AEROSPACE</div>
+            <div style="font-weight: 700; color: var(--text-main); margin: 0.25rem 0;">🚀 Work Done by Variable Force</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Fuel-burning rocket payload to 10,000 m</div>
+          </a>
+          <a href="/example_consumer_surplus.html" class="glass-panel" style="text-decoration: none; padding: 1rem; border-left: 3px solid var(--warm-gold);">
+            <div style="font-size: 0.72rem; color: var(--warm-gold); font-family: var(--font-mono); font-weight: 600;">APP 07 · MARKET SURPLUS</div>
+            <div style="font-weight: 700; color: var(--text-main); margin: 0.25rem 0;">🚕 Consumer Surplus Economics</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Integrating rider savings in rideshare pricing</div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div>
+        <strong>CalculusVerse</strong> · Md Ikramul Hoque Arik (Gachbaria Govt College)
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="https://wa.me/8801572936762" target="_blank" style="color: var(--neon-cyan); text-decoration: none;">WhatsApp Feedback</a>
+        <a href="/multivariable_3d.html" style="color: var(--text-main); text-decoration: none;">Next: 3D Multivariable →</a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { sound, createMathEvaluator, numericalIntegral, setupSimulationShortcuts, createSimulationHUD } from '/main.js';
+
+      const canvas = document.getElementById('integralCanvas');
+      const ctx = canvas.getContext('2d');
+      const drawIndicator = document.getElementById('drawIndicator');
+
+      const xRange = [-4.5, 4.5];
+      const yRange = [-2, 6];
+
+      let currentFormulaStr = "4 - x^2";
+      let mathFn = createMathEvaluator(currentFormulaStr);
+      let n = 12;
+      let boundA = -1.8;
+      let boundB = 1.8;
+      let method = 'midpoint'; // 'left', 'right', 'midpoint', 'trapezoid'
+
+      // Initialize SimulationHUD overlay in the top-right corner of the canvas
+      const hud = createSimulationHUD({
+        container: canvas.parentElement,
+        status: 'Ready',
+        moduleTitle: 'Riemann Slices',
+        position: 'top-right',
+        shortcuts: [
+          { key: 'Space', label: '3s Draw' },
+          { key: 'R', label: 'Reset Defaults' }
+        ]
+      });
+
+      // 3-Second Progressive Draw State
+      let isDrawing = false;
+      let drawProgress = 1.0;
+      let drawStartTime = 0;
+      const DRAW_DURATION = 3000;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        draw();
+      }
+      window.addEventListener('resize', resize);
+
+      function toScreenX(x, width) {
+        return ((x - xRange[0]) / (xRange[1] - xRange[0])) * width;
+      }
+      function toScreenY(y, height) {
+        return height - ((y - yRange[0]) / (yRange[1] - yRange[0])) * height;
+      }
+
+      function start3SecondDraw(formulaStr) {
+        currentFormulaStr = formulaStr;
+        mathFn = createMathEvaluator(formulaStr);
+        drawProgress = 0.0;
+        isDrawing = true;
+        drawStartTime = performance.now();
+        drawIndicator.classList.add('active');
+        hud.setStatus('Running');
+        sound.playDrawSweep(3.0);
+
+        function step(now) {
+          const elapsed = now - drawStartTime;
+          drawProgress = Math.min(1.0, elapsed / DRAW_DURATION);
+
+          draw();
+
+          if (drawProgress < 1.0) {
+            requestAnimationFrame(step);
+          } else {
+            isDrawing = false;
+            drawIndicator.classList.remove('active');
+            hud.setStatus('Ready');
+            sound.playChime();
+          }
+        }
+        requestAnimationFrame(step);
+      }
+
+      function draw() {
+        const width = canvas.width / window.devicePixelRatio;
+        const height = canvas.height / window.devicePixelRatio;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Coordinate grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        for (let x = Math.ceil(xRange[0]); x <= Math.floor(xRange[1]); x++) {
+          const sx = toScreenX(x, width);
+          ctx.beginPath();
+          ctx.moveTo(sx, 0);
+          ctx.lineTo(sx, height);
+          ctx.stroke();
+        }
+        for (let y = Math.ceil(yRange[0]); y <= Math.floor(yRange[1]); y++) {
+          const sy = toScreenY(y, height);
+          ctx.beginPath();
+          ctx.moveTo(0, sy);
+          ctx.lineTo(width, sy);
+          ctx.stroke();
+        }
+
+        // Axes
+        const originX = toScreenX(0, width);
+        const originY = toScreenY(0, height);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, originY);
+        ctx.lineTo(width, originY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX, height);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px JetBrains Mono';
+        for (let x = -4; x <= 4; x += 1) {
+          if (x !== 0) ctx.fillText(x.toString(), toScreenX(x, width) - 4, originY + 16);
+        }
+        for (let y = -1; y <= 5; y += 1) {
+          if (y !== 0) ctx.fillText(y.toString(), originX + 8, toScreenY(y, height) + 4);
+        }
+
+        // 1. Draw Riemann Partitions (Rectangles or Trapezoids)
+        let riemannSum = 0;
+        const deltaX = (boundB - boundA) / n;
+
+        for (let i = 0; i < n; i++) {
+          const xLeft = boundA + i * deltaX;
+          const xRight = xLeft + deltaX;
+          const xMid = (xLeft + xRight) / 2;
+
+          let heightVal = 0;
+          if (method === 'left') heightVal = mathFn(xLeft);
+          else if (method === 'right') heightVal = mathFn(xRight);
+          else if (method === 'midpoint') heightVal = mathFn(xMid);
+
+          const sLeftX = toScreenX(xLeft, width);
+          const sRightX = toScreenX(xRight, width);
+
+          if (method === 'trapezoid') {
+            const yL = mathFn(xLeft);
+            const yR = mathFn(xRight);
+            const trapArea = ((yL + yR) / 2) * deltaX;
+            riemannSum += trapArea;
+
+            const sYL = toScreenY(yL, height);
+            const sYR = toScreenY(yR, height);
+
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.22)';
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(sLeftX, originY);
+            ctx.lineTo(sLeftX, sYL);
+            ctx.lineTo(sRightX, sYR);
+            ctx.lineTo(sRightX, originY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          } else {
+            riemannSum += heightVal * deltaX;
+            const sHeightY = toScreenY(heightVal, height);
+            const rectW = sRightX - sLeftX;
+            const rectH = originY - sHeightY;
+
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1.5;
+
+            ctx.beginPath();
+            if (rectH >= 0) {
+              ctx.rect(sLeftX, sHeightY, rectW, rectH);
+            } else {
+              ctx.rect(sLeftX, originY, rectW, -rectH);
+            }
+            ctx.fill();
+            ctx.stroke();
+
+            // Sample point dot
+            let sampleX = xLeft;
+            if (method === 'right') sampleX = xRight;
+            if (method === 'midpoint') sampleX = xMid;
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(toScreenX(sampleX, width), sHeightY, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // 2. Draw Bound Markers [a, b]
+        const sBoundAX = toScreenX(boundA, width);
+        const sBoundBX = toScreenX(boundB, width);
+
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 4]);
+
+        ctx.beginPath();
+        ctx.moveTo(sBoundAX, 0);
+        ctx.lineTo(sBoundAX, height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(sBoundBX, 0);
+        ctx.lineTo(sBoundBX, height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '12px Outfit font-bold';
+        ctx.fillText(`a = ${boundA.toFixed(1)}`, sBoundAX - 15, originY + 30);
+        ctx.fillText(`b = ${boundB.toFixed(1)}`, sBoundBX - 15, originY + 30);
+
+        // 3. Draw Progressive 3-Second Integrand Curve
+        const maxDrawX = xRange[0] + drawProgress * (xRange[1] - xRange[0]);
+        ctx.strokeStyle = '#00f2fe';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(0, 242, 254, 0.5)';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+
+        let started = false;
+        const totalSteps = 300;
+        const currentSteps = Math.floor(totalSteps * drawProgress);
+
+        for (let i = 0; i <= currentSteps; i++) {
+          const x = xRange[0] + (i / totalSteps) * (xRange[1] - xRange[0]);
+          const y = mathFn(x);
+          if (!isNaN(y)) {
+            const sx = toScreenX(x, width);
+            const sy = toScreenY(y, height);
+            if (!started) {
+              ctx.moveTo(sx, sy);
+              started = true;
+            } else {
+              ctx.lineTo(sx, sy);
+            }
+          }
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Spark cursor while drawing
+        if (isDrawing && currentSteps > 0) {
+          const leadY = mathFn(maxDrawX);
+          if (!isNaN(leadY)) {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(toScreenX(maxDrawX, width), toScreenY(leadY, height), 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Update Math Displays
+        const exactIntegral = numericalIntegral(mathFn, boundA, boundB, 500);
+        updateCalculations(riemannSum, exactIntegral);
+      }
+
+      function updateCalculations(riemannSum, exactIntegral) {
+        const errorPercent = exactIntegral !== 0 ? Math.abs((riemannSum - exactIntegral) / exactIntegral) * 100 : 0;
+        const accuracy = Math.max(0, 100 - errorPercent);
+
+        document.getElementById('canvasAccuracy').textContent = `${accuracy.toFixed(1)}%`;
+        document.getElementById('riemannSumMath').innerHTML = `$\\sum_{i=1}^{${n}} = ${riemannSum.toFixed(4)}$`;
+        document.getElementById('exactIntegralMath').innerHTML = `$\\int_{${boundA.toFixed(1)}}^{${boundB.toFixed(1)}} f(x)\\,dx = ${exactIntegral.toFixed(4)}$`;
+        document.getElementById('errorMath').innerHTML = `$\\text{Error: } ${errorPercent.toFixed(2)}\\%$`;
+
+        if (window.katex) {
+          window.katex.render(`\\sum_{i=1}^{${n}} = ${riemannSum.toFixed(4)}`, document.getElementById('riemannSumMath'), { throwOnError: false });
+          window.katex.render(`\\int_{${boundA.toFixed(1)}}^{${boundB.toFixed(1)}} f(x)\\,dx = ${exactIntegral.toFixed(4)}`, document.getElementById('exactIntegralMath'), { throwOnError: false });
+          window.katex.render(`\\text{Error: } ${errorPercent.toFixed(2)}\\%`, document.getElementById('errorMath'), { throwOnError: false });
+        }
+      }
+
+      // Slider Listeners
+      const nSlider = document.getElementById('nSlider');
+      const boundASlider = document.getElementById('boundASlider');
+      const boundBSlider = document.getElementById('boundBSlider');
+
+      nSlider.addEventListener('input', (e) => {
+        n = parseInt(e.target.value);
+        document.getElementById('nSliderVal').textContent = `n = ${n}`;
+        draw();
+      });
+
+      boundASlider.addEventListener('input', (e) => {
+        boundA = parseFloat(e.target.value);
+        if (boundA >= boundB - 0.2) boundA = boundB - 0.2;
+        document.getElementById('boundAVal').textContent = boundA.toFixed(2);
+        draw();
+      });
+
+      boundBSlider.addEventListener('input', (e) => {
+        boundB = parseFloat(e.target.value);
+        if (boundB <= boundA + 0.2) boundB = boundA + 0.2;
+        document.getElementById('boundBVal').textContent = boundB.toFixed(2);
+        draw();
+      });
+
+      // Method buttons
+      const methodButtons = document.querySelectorAll('[data-method]');
+      methodButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          methodButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          method = btn.getAttribute('data-method');
+          draw();
+        });
+      });
+
+      // Preset buttons
+      const presetButtons = document.querySelectorAll('[data-preset]');
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          presetButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const preset = btn.getAttribute('data-preset');
+          let formula = "4 - x^2";
+          if (preset === 'parabola') {
+            formula = "4 - x^2";
+            boundA = -1.8;
+            boundB = 1.8;
+          } else if (preset === 'sine') {
+            formula = "sin(x) + 1.8";
+            boundA = -3.0;
+            boundB = 3.0;
+          } else if (preset === 'quartic') {
+            formula = "0.1 * x^4 - x^2 + 3";
+            boundA = -2.5;
+            boundB = 2.5;
+          } else if (preset === 'linear') {
+            formula = "0.6 * x + 2";
+            boundA = -2.0;
+            boundB = 2.0;
+          }
+
+          document.getElementById('customFormulaInput').value = formula;
+          boundASlider.value = boundA;
+          boundBSlider.value = boundB;
+          document.getElementById('boundAVal').textContent = boundA.toFixed(2);
+          document.getElementById('boundBVal').textContent = boundB.toFixed(2);
+
+          start3SecondDraw(formula);
+        });
+      });
+
+      // Custom formula apply
+      document.getElementById('applyFormulaBtn').addEventListener('click', () => {
+        const formula = document.getElementById('customFormulaInput').value;
+        start3SecondDraw(formula);
+      });
+      document.getElementById('customFormulaInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const formula = document.getElementById('customFormulaInput').value;
+          start3SecondDraw(formula);
+        }
+      });
+
+      document.getElementById('resetIntegrationBtn').addEventListener('click', () => {
+        hud.setStatus('Resetting');
+        n = 12;
+        boundA = -1.8;
+        boundB = 1.8;
+        method = 'midpoint';
+        currentFormulaStr = "4 - x^2";
+
+        nSlider.value = 12;
+        boundASlider.value = -1.8;
+        boundBSlider.value = 1.8;
+        document.getElementById('nSliderVal').textContent = 'n = 12';
+        document.getElementById('boundAVal').textContent = '-1.80';
+        document.getElementById('boundBVal').textContent = '1.80';
+        document.getElementById('customFormulaInput').value = currentFormulaStr;
+
+        methodButtons.forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-method') === 'midpoint');
+        });
+
+        start3SecondDraw(currentFormulaStr);
+      });
+
+      // Global keyboard shortcuts (Space: 3s Draw, R: Reset to Defaults)
+      setupSimulationShortcuts({
+        onToggleAnimation: () => {
+          const formula = document.getElementById('customFormulaInput').value;
+          start3SecondDraw(formula);
+        },
+        onReset: () => {
+          document.getElementById('resetIntegrationBtn').click();
+        }
+      });
+
+      setTimeout(() => {
+        resize();
+        start3SecondDraw(currentFormulaStr);
+      }, 150);
+    </script>
+  </body>
+</html>
